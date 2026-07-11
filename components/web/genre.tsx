@@ -50,9 +50,14 @@ async function GenreSection({ genreName }: { genreName: string }) {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {novels.map((novel) => (
                     <Link href={`/novel/${novel.id}`} key={novel.id} className="group">
-                        <div className="w-full aspect-2/3 bg-muted rounded-md overflow-hidden mb-2 relative">
-                            {/* Placeholder for cover_url - replace with real images later */}
-                            <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
+                        <div className="w-full aspect-2/3 bg-muted rounded-md overflow-hidden mb-2 relative shadow-sm border border-border">
+                            {novel.cover_url ? (
+                                <img src={novel.cover_url} alt={novel.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            ) : (
+                                <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
+                                    <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest px-2 text-center">No Cover</span>
+                                </div>
+                            )}
                         </div>
                         <h3 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">
                             {novel.title}

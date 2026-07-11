@@ -35,7 +35,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     <div className="max-w-5xl mx-auto px-6 py-12 space-y-12 animate-in fade-in duration-500">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row gap-8 items-start">
-        <div className="w-full md:w-72 shrink-0 aspect-[2/3] rounded-lg overflow-hidden border border-border shadow-2xl shadow-primary/10 bg-muted relative group">
+        <div className="w-full md:w-72 shrink-0 aspect-2/3 rounded-lg overflow-hidden border border-border shadow-2xl shadow-primary/10 bg-muted relative group">
           {novel.cover_url ? (
             <img src={novel.cover_url} alt={novel.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           ) : (
@@ -47,7 +47,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
           <div>
             <h1 className="text-4xl md:text-5xl font-black mb-3 tracking-tight">{novel.title}</h1>
             <p className="text-xl text-muted-foreground font-medium flex items-center gap-2">
-              By <span className="text-foreground">{authorName}</span>
+              By <Link href={`/user/${novel.author_id}`} className="text-foreground hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">{authorName}</Link>
             </p>
           </div>
 
@@ -93,7 +93,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
                       className="flex items-center justify-between p-5 hover:bg-muted/50 transition-colors group"
                     >
                       <div className="flex items-center gap-6">
-                        <span className="text-muted-foreground font-medium text-sm min-w-[3rem]">Ch. {chapter.chapter_number}</span>
+                        <span className="text-muted-foreground font-medium text-sm min-w-3rem">Ch. {chapter.chapter_number}</span>
                         <span className="font-medium text-foreground group-hover:text-primary transition-colors">{chapter.title}</span>
                       </div>
                       <span className="text-xs text-muted-foreground font-medium">

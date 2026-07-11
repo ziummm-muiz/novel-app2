@@ -37,7 +37,7 @@ export default async function ChapterManagementPage({ params }: { params: Promis
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 bg-muted/30 p-8 rounded-3xl border border-border">
                 <div className="flex gap-6 items-center">
-                    <div className="w-24 aspect-[2/3] bg-muted rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-border">
+                    <div className="w-24 aspect-2/3 bg-muted rounded-md overflow-hidden shrink-0 shadow-sm border border-border">
                         {novel.cover_url && <img src={novel.cover_url} alt="cover" className="w-full h-full object-cover" />}
                     </div>
                     <div>

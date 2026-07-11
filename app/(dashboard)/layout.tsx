@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { LayoutDashboard, BookOpen, Settings, Users, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, BookOpen, Settings, Users, ArrowLeft, Edit } from "lucide-react";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -46,6 +46,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                             Write Novel
                         </Link>
                     )}
+
+                    <Link href="/dashboard/blogs" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors">
+                        <Edit className="size-4" />
+                        Blogs
+                    </Link>
 
                     {isAdmin && (
                         <Link href="/dashboard/users" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors">

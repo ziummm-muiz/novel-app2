@@ -35,7 +35,7 @@ export default async function TrendingNovels() {
                         <Card className="border-none shadow-none bg-transparent hover:bg-muted/50 transition-colors duration-200">
                             <CardContent className="p-3 flex items-center gap-4">
                                 {/* Rank Number */}
-                                <div className={`w-8 flex-shrink-0 text-center font-black text-2xl sm:text-3xl ${
+                                <div className={`w-8 shrink-0 text-center font-black text-2xl sm:text-3xl ${
                                     index === 0 ? 'text-amber-500' : 
                                     index === 1 ? 'text-slate-400' : 
                                     index === 2 ? 'text-amber-700' : 
@@ -45,9 +45,14 @@ export default async function TrendingNovels() {
                                 </div>
                                 
                                 {/* Cover Image */}
-                                <div className="w-16 sm:w-20 aspect-2/3 bg-muted rounded-md overflow-hidden flex-shrink-0 relative">
-                                    {/* Placeholder for actual cover image */}
-                                    <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
+                                <div className="w-16 sm:w-20 aspect-2/3 bg-muted rounded-md overflow-hidden shrink-0 relative shadow-sm border border-border">
+                                    {novel.cover_url ? (
+                                        <img src={novel.cover_url} alt={novel.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    ) : (
+                                        <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
+                                            <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-widest text-center px-1">No Cover</span>
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 {/* Text Content */}

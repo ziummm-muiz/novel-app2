@@ -69,7 +69,7 @@ export default function NewChapterPage({ params }: { params: Promise<{ novelId: 
           </div>
         </div>
 
-        <div className="space-y-2 flex flex-col h-full min-h-[500px]">
+        <div className="space-y-2 flex flex-col h-full min-h-125">
           <div className="flex justify-between items-end">
             <Label htmlFor="content">Chapter Content (Markdown supported)</Label>
           </div>
@@ -78,7 +78,7 @@ export default function NewChapterPage({ params }: { params: Promise<{ novelId: 
             name="content" 
             placeholder="# Your story begins here...&#10;&#10;Write or paste your chapter text." 
             required 
-            className="flex-1 min-h-[500px] resize-y font-mono text-sm leading-relaxed p-6" 
+            className="flex-1 min-h-125 resize-y font-mono text-sm leading-relaxed p-6" 
           />
         </div>
 

@@ -14,7 +14,7 @@ export default function CategoryNovelCard({ novel }: { novel: any }) {
     return (
         <div className="flex bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all h-48 w-full group">
             {/* Cover Image */}
-            <Link href={`/novel/${novel.id}`} className="w-32 sm:w-36 flex-shrink-0 relative bg-muted cursor-pointer overflow-hidden">
+            <Link href={`/novel/${novel.id}`} className="w-32 sm:w-36 shrink-0 relative bg-muted cursor-pointer overflow-hidden">
                 {/* Fallback image placeholder */}
                 <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
                 {novel.cover_url && (

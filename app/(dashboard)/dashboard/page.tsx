@@ -141,7 +141,7 @@ export default async function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {novels?.map(novel => (
                         <Card key={novel.id} className="overflow-hidden flex flex-col group hover:border-primary transition-colors">
-                            <div className="aspect-[2/1] relative bg-muted overflow-hidden">
+                            <div className="aspect-2/1 relative bg-muted overflow-hidden">
                                 {novel.cover_url && <img src={novel.cover_url} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Link href={`/dashboard/write/${novel.id}/chapters`}>

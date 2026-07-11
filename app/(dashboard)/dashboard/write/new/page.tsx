@@ -69,7 +69,7 @@ export default function NewNovelPage() {
           {/* Cover Upload Area */}
           <div className="col-span-1 flex flex-col gap-4">
             <Label>Cover Image</Label>
-            <div className="relative aspect-[2/3] w-full bg-muted rounded-xl border-2 border-dashed border-border overflow-hidden flex items-center justify-center group cursor-pointer hover:border-primary transition-colors">
+            <div className="relative aspect-2/3 w-full bg-muted rounded-xl border-2 border-dashed border-border overflow-hidden flex items-center justify-center group cursor-pointer hover:border-primary transition-colors">
               <input 
                 type="file" 
                 name="cover" 
@@ -105,7 +105,7 @@ export default function NewNovelPage() {
                 name="synopsis" 
                 placeholder="Write a compelling blurb for your novel..." 
                 required 
-                className="min-h-[160px] resize-none" 
+                className="min-h-160px resize-none" 
               />
             </div>
 

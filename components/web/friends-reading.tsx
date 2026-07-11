@@ -15,7 +15,7 @@ export default async function FriendsReading() {
 
     // Get people the user follows
     const { data: follows, error: followsError } = await supabase
-        .from('follows')
+        .from('followers')
         .select('following_id')
         .eq('follower_id', user.id);
 
@@ -67,7 +67,17 @@ export default async function FriendsReading() {
 
     // If friends haven't read anything yet
     if (!history || history.length === 0) {
-        return null; 
+        return (
+            <section className="w-full my-8 bg-muted/30 p-8 rounded-2xl border border-border text-center">
+                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                    <UserIcon className="size-12 text-muted-foreground mb-4 opacity-50" />
+                    <h2 className="text-xl font-bold mb-2">No recent activity</h2>
+                    <p className="text-muted-foreground">
+                        None of the users you follow have read any novels recently.
+                    </p>
+                </div>
+            </section>
+        );
     }
 
     return (
@@ -84,7 +94,7 @@ export default async function FriendsReading() {
                             <CardContent className="p-0 h-full flex flex-col">
                                 {/* Friend Info Banner */}
                                 <div className="bg-muted/50 p-3 flex items-center gap-3 border-b border-border">
-                                    <div className="size-8 rounded-full bg-background flex items-center justify-center overflow-hidden flex-shrink-0 border border-border">
+                                    <div className="size-8 rounded-full bg-background flex items-center justify-center overflow-hidden shrink-0 border border-border">
                                         {record.profiles.avatar_url ? (
                                             <img src={record.profiles.avatar_url} alt={record.profiles.username} className="w-full h-full object-cover" />
                                         ) : (
@@ -103,9 +113,14 @@ export default async function FriendsReading() {
                                 
                                 {/* Novel Info */}
                                 <div className="p-4 flex gap-4 flex-1">
-                                    <div className="w-16 aspect-[2/3] bg-muted rounded-md overflow-hidden flex-shrink-0 relative shadow-sm">
-                                        {/* Placeholder for cover_url */}
-                                        <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
+                                    <div className="w-16 aspect-2/3 bg-muted rounded-md overflow-hidden shrink-0 relative shadow-sm border border-border">
+                                        {record.novels.cover_url ? (
+                                            <img src={record.novels.cover_url} alt={record.novels.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        ) : (
+                                            <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
+                                                <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-widest px-1 text-center">No Cover</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex flex-col justify-center">
                                         <h3 className="font-bold text-sm line-clamp-2 group-hover:text-primary transition-colors">

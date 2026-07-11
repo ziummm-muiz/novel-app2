@@ -22,6 +22,19 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
     notFound();
   }
 
+  // Record reading history if logged in
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    await supabase.from("reading_history").upsert({
+      user_id: user.id,
+      novel_id: novelId,
+      last_chapter_read: chapterNum,
+      last_read_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id,novel_id'
+    });
+  }
+
   // Find prev/next chapter numbers
   const { data: allChapters } = await supabase
     .from("chapters")
