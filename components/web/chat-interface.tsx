@@ -183,11 +183,11 @@ export default function ChatInterface({
   }
 
   if (isLoading) {
-    return <div className="h-[600px] flex items-center justify-center text-muted-foreground animate-pulse">Loading chats...</div>
+    return <div className="h-150 flex items-center justify-center text-muted-foreground animate-pulse">Loading chats...</div>
   }
 
   return (
-    <div className="h-[calc(100vh-140px)] min-h-[600px] border border-border rounded-2xl overflow-hidden bg-card flex shadow-sm animate-in fade-in duration-500">
+    <div className="h-[calc(100vh-140px)] min-h-150 border border-border rounded-2xl overflow-hidden bg-card flex shadow-sm animate-in fade-in duration-500">
       
       {/* Left Sidebar - Conversation List */}
       <div className={`w-full md:w-80 border-r border-border flex flex-col ${activeUser ? 'hidden md:flex' : 'flex'}`}>
@@ -315,7 +315,7 @@ export default function ChatInterface({
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message..."
-                  className="min-h-[50px] max-h-[150px] resize-none pr-12 rounded-xl border-border focus-visible:ring-primary/50"
+                  className="min-h-12.5 max-h-37.5 resize-none pr-12 rounded-xl border-border focus-visible:ring-primary/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault()

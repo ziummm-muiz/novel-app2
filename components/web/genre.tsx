@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import NovelCard from "./novel-card";
 
 // 2. Query function to fetch novels that contain the specific genre
 async function getNovelsByGenre(genre: string) {
@@ -16,7 +17,7 @@ async function getNovelsByGenre(genre: string) {
     
     const { data: novels, error } = await supabase
         .from("novels")
-        .select("*")
+        .select("*, author:profiles(username, full_name)")
         .contains("genres", [genre])
         .limit(4) // Limit to 4 for the homepage preview
         .order("created_at", { ascending: false });
@@ -49,23 +50,7 @@ async function GenreSection({ genreName }: { genreName: string }) {
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {novels.map((novel) => (
-                    <Link href={`/novel/${novel.id}`} key={novel.id} className="group">
-                        <div className="w-full aspect-2/3 bg-muted rounded-md overflow-hidden mb-2 relative shadow-sm border border-border">
-                            {novel.cover_url ? (
-                                <img src={novel.cover_url} alt={novel.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                            ) : (
-                                <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
-                                    <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest px-2 text-center">No Cover</span>
-                                </div>
-                            )}
-                        </div>
-                        <h3 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">
-                            {novel.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                            {novel.synopsis || "No synopsis available."}
-                        </p>
-                    </Link>
+                    <NovelCard key={novel.id} novel={novel} />
                 ))}
             </div>
         </section>
@@ -98,12 +83,11 @@ export function GenreCarousel() {
                 <CarouselContent className="-ml-4">
                     {APP_GENRES.map((genre, index) => (
                         <CarouselItem key={index} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-                            <Link href={`/explore?genre=${genre.toLowerCase()}`}>
+                            <Link href={`/categories/${genre.toLowerCase()}`}>
                                 <Card className="overflow-hidden border-none cursor-pointer group shadow-md hover:shadow-xl transition-all duration-300">
                                     <CardContent className="p-0 aspect-4/5 relative flex items-center justify-center">
-                                        {/* Fallback Image - Can be replaced later */}
                                         <img 
-                                            src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop" 
+                                            src={`/images/genres/${genre.toLowerCase().replace(/ /g, '-')}.png`} 
                                             alt={genre} 
                                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         />

@@ -3,12 +3,24 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 import AuthButton from './authButton';
-import Coins from './coins';
+// import Coins from './coins';
 
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import { BookOpen, Bell, MessageSquare } from 'lucide-react';
+import { BookOpen, Bell, MessageSquare, Menu } from 'lucide-react';
+import SearchBar from './search-bar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-export default function Navbar({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
+export default function Navbar({ 
+  user, 
+  profile,
+  unreadMessagesCount = 0,
+  unreadNotificationsCount = 0
+}: { 
+  user: SupabaseUser | null, 
+  profile?: any,
+  unreadMessagesCount?: number,
+  unreadNotificationsCount?: number
+}) {
 
   const pathname = usePathname()
 
@@ -24,19 +36,36 @@ export default function Navbar({ user, profile }: { user: SupabaseUser | null, p
   }
 
   return (
-    <nav className="w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border py-4 px-6 flex items-center justify-between fixed top-0 left-0 z-50">
+    <nav className="w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border py-3 px-4 md:px-6 flex items-center justify-between fixed top-0 left-0 z-50">
       {/* Left section: Logo + Links */}
-      <div className="flex items-center gap-10">
-        {/*  logo  */}
-                <div className="p-6">
-                    <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                        <BookOpen className="text-primary size-6" />
-                        <span>NovelApp<span className="text-primary">.</span></span>
-                    </Link>
-                </div>
+      <div className="flex items-center gap-4 lg:gap-8">
+        
+        {/* Mobile Menu Trigger */}
+        <div className="md:hidden flex items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="p-2 -ml-2 rounded-md hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Menu className="size-5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 mt-2">
+              {navLinks.map((link) => (
+                <DropdownMenuItem key={link.name}>
+                  <Link href={link.href} className="w-full cursor-pointer">
+                    {link.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-        {/* Nav Links */}
-        <ul className="flex items-center gap-6 text-sm font-medium">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
+            <BookOpen className="text-primary size-5 md:size-6 shrink-0" />
+            <span className="hidden sm:inline-block">NovelApp<span className="text-primary">.</span></span>
+        </Link>
+
+        {/* Desktop Nav Links */}
+        <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
@@ -57,19 +86,36 @@ export default function Navbar({ user, profile }: { user: SupabaseUser | null, p
         </ul>
       </div>
 
-      {/* Right section: Coins + Auth */}
-      <div className="flex items-center gap-6">
+      {/* Right section: Search + Coins + Auth */}
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+        <div className="hidden lg:block w-64 xl:w-80">
+          <SearchBar />
+        </div>
         {user && (
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <Link href="/chats" className="hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Messages">
+          <div className="flex items-center gap-2 sm:gap-4 text-muted-foreground">
+            <Link href="/chats" className="relative hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Messages">
               <MessageSquare className="size-5" />
+              {unreadMessagesCount > 0 && (
+                <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-background"></span>
+                </span>
+              )}
             </Link>
-            <Link href="/notifications" className="hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Notifications">
+            <Link href="/notifications" className="relative hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Notifications">
               <Bell className="size-5" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-background"></span>
+                </span>
+              )}
             </Link>
           </div>
         )}
-        <Coins/>
+        <div className="hidden sm:block">
+          {/* <Coins/> */}
+        </div>
         <AuthButton user={user} profile={profile} />    
       </div>
     </nav>

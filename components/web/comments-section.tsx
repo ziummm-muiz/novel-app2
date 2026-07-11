@@ -150,7 +150,7 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
                 value={replyInput}
                 onChange={e => setReplyInput(e.target.value)}
                 placeholder="Write a reply..."
-                className="min-h-[80px] text-sm resize-y bg-background"
+                className="min-h-20 text-sm resize-y bg-background"
                 autoFocus
               />
               <Button size="sm" onClick={() => handlePost(replyInput, comment.id)} disabled={isSubmitting || !replyInput.trim()}>
@@ -186,7 +186,7 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
               value={mainInput}
               onChange={e => setMainInput(e.target.value)}
               placeholder="What are your thoughts?"
-              className="min-h-[100px] resize-y bg-background"
+              className="min-h-25 resize-y bg-background"
             />
             <div className="flex justify-end mt-3">
               <Button onClick={() => handlePost(mainInput)} disabled={isSubmitting || !mainInput.trim()}>

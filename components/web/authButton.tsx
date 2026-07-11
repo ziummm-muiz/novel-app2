@@ -18,12 +18,12 @@ export default function AuthButton({ user, profile }: { user: SupabaseUser | nul
                             <UserIcon className="size-4 text-muted-foreground" />
                         )}
                     </div>
-                    <span className="text-sm font-medium text-foreground pr-1">
+                    <span className="hidden sm:inline-block text-sm font-medium text-foreground pr-1 whitespace-nowrap truncate max-w-[120px]">
                         {profile?.full_name || profile?.username || user.email?.split('@')[0]}
                     </span>
                 </div>
                 </Link>
-                <form action={signout}>
+                <form action={signout} className="hidden sm:block">
                     <Button type="submit" variant="secondary" size="sm" className="rounded-full">Sign Out</Button>
                 </form>
             </div>

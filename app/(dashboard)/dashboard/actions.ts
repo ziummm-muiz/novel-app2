@@ -97,7 +97,7 @@ export async function createChapter(formData: FormData) {
   // Validate that the user owns this novel (Security check)
   const { data: novel, error: novelError } = await supabase
     .from('novels')
-    .select('author_id')
+    .select('author_id, title')
     .eq('id', novelId)
     .single()
 
@@ -121,6 +121,26 @@ export async function createChapter(formData: FormData) {
   if (insertError) {
     console.error("Database insert error:", insertError)
     throw new Error("Failed to save chapter")
+  }
+
+  // Notify library readers
+  const { data: readers } = await supabase
+    .from('library')
+    .select('user_id')
+    .eq('novel_id', novelId)
+    .in('status', ['reading', 'favourite'])
+
+  if (readers && readers.length > 0) {
+    // Import createNotification at the top if needed, or just insert directly
+    // Wait, since we are already in an action file and have supabase instance, we can just insert them here
+    const notifications = readers.map(reader => ({
+      user_id: reader.user_id,
+      title: `New Chapter: ${novel?.title || title}`,
+      content: `Chapter ${chapterNumber}: ${title} has been published!`,
+      link: `/novel/${novelId}`
+    }))
+    // We don't block or error on notification failure
+    await supabase.from('notifications').insert(notifications)
   }
 
   revalidatePath(`/dashboard/write/${novelId}/chapters`)

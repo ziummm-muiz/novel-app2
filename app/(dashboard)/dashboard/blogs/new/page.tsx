@@ -71,7 +71,7 @@ export default function NewBlogPage() {
                 name="content" 
                 placeholder="Write your blog post here..." 
                 required 
-                className="min-h-[300px] font-mono text-sm"
+                className="min-h-75 font-mono text-sm"
               />
             </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { updateLibraryStatus } from "@/app/actions/library"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Bookmark, Check, Loader2, BookOpen, Star, X } from "lucide-react"
 
@@ -38,10 +38,11 @@ export default function LibraryStatusButton({ novelId, initialStatus, userId }: 
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={status !== 'none' ? "secondary" : "outline"} className="rounded-full font-semibold shadow-sm w-full md:w-auto" disabled={isPending}>
-          {getButtonContent()}
-        </Button>
+      <DropdownMenuTrigger 
+        className={buttonVariants({ variant: status !== 'none' ? "secondary" : "outline", className: "rounded-full font-semibold shadow-sm w-full md:w-auto" })} 
+        disabled={isPending}
+      >
+        {getButtonContent()}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 rounded-xl p-2">
         <DropdownMenuItem onClick={() => handleUpdate('reading')} className="rounded-lg cursor-pointer py-2.5">

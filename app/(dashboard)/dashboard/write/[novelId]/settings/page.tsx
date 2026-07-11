@@ -161,7 +161,7 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
                 name="synopsis" 
                 defaultValue={initialNovel.synopsis}
                 required 
-                className="min-h-[160px] resize-none" 
+                className="min-h-40 resize-none" 
               />
             </div>
 

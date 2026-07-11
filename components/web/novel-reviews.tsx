@@ -101,7 +101,7 @@ export default function NovelReviews({ novelId, initialReviews, userId }: { nove
             placeholder="What did you think about this novel?" 
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
-            className="mb-4 bg-background resize-y min-h-[100px]"
+            className="mb-4 bg-background resize-y min-h-25"
             required
           />
           

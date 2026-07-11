@@ -29,6 +29,17 @@ export async function toggleBlogLike(blogId: string, currentPath: string) {
       blog_id: blogId,
       user_id: user.id
     })
+    
+    // Notify blog author
+    const { data: blog } = await supabase.from('blogs').select('author_id, title').eq('id', blogId).single()
+    if (blog && blog.author_id !== user.id) {
+      await supabase.from('notifications').insert({
+        user_id: blog.author_id,
+        title: 'New Blog Like',
+        content: `Someone liked your blog post "${blog.title}".`,
+        link: `/blogs/${blogId}`
+      })
+    }
   }
 
   revalidatePath(currentPath)
@@ -62,6 +73,29 @@ export async function addComment(blogId: string, content: string, parentId: stri
   if (error) {
     console.error('Error adding comment:', error)
     throw new Error('Failed to post comment.')
+  }
+
+  // Notify authors
+  if (parentId) {
+    const { data: parentComment } = await supabase.from('blog_comments').select('user_id').eq('id', parentId).single()
+    if (parentComment && parentComment.user_id !== user.id) {
+      await supabase.from('notifications').insert({
+        user_id: parentComment.user_id,
+        title: 'New Reply',
+        content: `Someone replied to your comment on a blog post.`,
+        link: `/blogs/${blogId}`
+      })
+    }
+  } else {
+    const { data: blog } = await supabase.from('blogs').select('author_id, title').eq('id', blogId).single()
+    if (blog && blog.author_id !== user.id) {
+      await supabase.from('notifications').insert({
+        user_id: blog.author_id,
+        title: 'New Comment',
+        content: `Someone commented on your blog post "${blog.title}".`,
+        link: `/blogs/${blogId}`
+      })
+    }
   }
 
   revalidatePath(currentPath)
@@ -112,6 +146,17 @@ export async function toggleCommentLike(commentId: string, currentPath: string) 
       comment_id: commentId,
       user_id: user.id
     })
+    
+    // Notify comment author
+    const { data: comment } = await supabase.from('blog_comments').select('user_id, blog_id').eq('id', commentId).single()
+    if (comment && comment.user_id !== user.id) {
+      await supabase.from('notifications').insert({
+        user_id: comment.user_id,
+        title: 'New Like',
+        content: `Someone liked your comment.`,
+        link: `/blogs/${comment.blog_id}`
+      })
+    }
   }
 
   revalidatePath(currentPath)

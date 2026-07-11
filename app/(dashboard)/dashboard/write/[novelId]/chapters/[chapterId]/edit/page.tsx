@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { updateChapter, softDeleteChapter } from "../../../../actions"
+// import { updateChapter, softDeleteChapter } from "../../../../actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,6 +9,7 @@ import { Loader2, ArrowLeft, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { softDeleteChapter, updateChapter } from "@/app/(dashboard)/dashboard/actions"
 
 export default function EditChapterPage({ params }: { params: Promise<{ novelId: string, chapterId: string }> }) {
   const [novelId, setNovelId] = useState<string>("")
@@ -145,7 +146,7 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
             name="content"
             defaultValue={initialChapter.content_url} 
             required 
-            className="min-h-[500px] resize-y font-mono text-sm leading-relaxed" 
+            className="min-h-[60vh] resize-y font-mono text-sm leading-relaxed" 
           />
         </div>
 

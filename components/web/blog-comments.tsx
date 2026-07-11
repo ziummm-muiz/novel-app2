@@ -147,7 +147,7 @@ function CommentItem({
                   placeholder="Write a reply..." 
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  className="min-h-[80px] text-sm resize-none"
+                  className="min-h-20 text-sm resize-none"
                 />
                 <div className="flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setIsReplying(false)}>Cancel</Button>
@@ -219,7 +219,7 @@ export default function BlogComments({
             placeholder="Share your thoughts..." 
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[100px] resize-y"
+            className="min-h-25 resize-y"
           />
           <div className="flex justify-end">
             <Button onClick={handlePostComment} disabled={isPending || !newComment.trim()}>
