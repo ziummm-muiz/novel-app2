@@ -6,7 +6,7 @@ import AuthButton from './authButton';
 import Coins from './coins';
 
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Bell, MessageSquare } from 'lucide-react';
 
 export default function Navbar({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
 
@@ -55,6 +55,16 @@ export default function Navbar({ user, profile }: { user: SupabaseUser | null, p
 
       {/* Right section: Coins + Auth */}
       <div className="flex items-center gap-6">
+        {user && (
+          <div className="flex items-center gap-4 text-muted-foreground">
+            <Link href="/chats" className="hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Messages">
+              <MessageSquare className="size-5" />
+            </Link>
+            <Link href="/notifications" className="hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Notifications">
+              <Bell className="size-5" />
+            </Link>
+          </div>
+        )}
         <Coins/>
         <AuthButton user={user} profile={profile} />    
       </div>

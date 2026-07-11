@@ -28,6 +28,7 @@ export default async function SpecificCategoryPage({ params }: { params: Promise
             reviews(rating)
         `)
         .contains("genres", [actualGenre])
+        .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
     if (error) {

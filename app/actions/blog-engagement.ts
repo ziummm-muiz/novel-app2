@@ -43,6 +43,11 @@ export async function addComment(blogId: string, content: string, parentId: stri
     throw new Error('You must be logged in to comment.')
   }
 
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) {
+    throw new Error('Your account is restricted from commenting.')
+  }
+
   if (!content.trim()) {
     throw new Error('Comment cannot be empty.')
   }

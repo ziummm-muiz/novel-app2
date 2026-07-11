@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
+import NovelReviews from "@/components/web/novel-reviews";
+import CommentsSection from "@/components/web/comments-section";
 
 export default async function NovelPage({ params }: { params: Promise<{ novelId: string }> }) {
   const { novelId } = await params;
@@ -15,6 +17,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
       profiles:author_id(full_name, username)
     `)
     .eq("id", novelId)
+    .is("deleted_at", null)
     .single();
 
   if (novelError || !novel) {
@@ -25,7 +28,22 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     .from("chapters")
     .select("chapter_number, title, id, published_at")
     .eq("novel_id", novelId)
+    .is("deleted_at", null)
     .order("chapter_number", { ascending: true });
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select(`*, profiles(username, full_name, avatar_url)`)
+    .eq("novel_id", novelId)
+    .order("created_at", { ascending: false });
+
+  const { data: comments } = await supabase
+    .from("comments")
+    .select(`*, profiles(username, full_name, avatar_url), comment_likes(user_id)`)
+    .eq("target_id", novelId)
+    .order("created_at", { ascending: false });
 
   const authorName = novel.profiles?.full_name || novel.profiles?.username || "Unknown Author";
   
@@ -126,6 +144,14 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="pt-16 space-y-16">
+        <NovelReviews novelId={novelId} initialReviews={reviews || []} userId={user?.id} />
+        
+        <div className="bg-muted/10 p-8 rounded-3xl border border-border">
+          <CommentsSection targetId={novelId} initialComments={comments || []} userId={user?.id} />
         </div>
       </div>
     </div>

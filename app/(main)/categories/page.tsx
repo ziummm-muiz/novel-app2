@@ -16,6 +16,7 @@ async function getTopNovelsForCategory(genre: string) {
             reviews(rating)
         `)
         .contains("genres", [genre])
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(3); // Show top 3 per category on the main page
 

@@ -12,6 +12,11 @@ export async function createBlog(formData: FormData) {
     throw new Error('You must be logged in to create a blog.')
   }
 
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) {
+    throw new Error('Your account is restricted from posting.')
+  }
+
   const title = formData.get('title') as string
   const content = formData.get('content') as string
 

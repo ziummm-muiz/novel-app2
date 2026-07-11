@@ -29,6 +29,7 @@ export default async function ChapterManagementPage({ params }: { params: Promis
         .from("chapters")
         .select("*")
         .eq("novel_id", novelId)
+        .is("deleted_at", null)
         .order("chapter_number", { ascending: true });
 
     return (
@@ -58,6 +59,12 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                         <Button className="w-full gap-2">
                             <PlusCircle className="size-4" />
                             Write New Chapter
+                        </Button>
+                    </Link>
+                    <Link href={`/dashboard/write/${novelId}/settings`}>
+                        <Button variant="secondary" className="w-full gap-2">
+                            <Settings className="size-4" />
+                            Novel Settings
                         </Button>
                     </Link>
                     <Link href={`/novel/${novelId}`}>
@@ -96,10 +103,12 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                                     </div>
                                 </div>
                                 <div>
-                                    <Button variant="ghost" size="sm" className="gap-2">
-                                        <Settings className="size-4" />
-                                        Manage
-                                    </Button>
+                                    <Link href={`/dashboard/write/${novelId}/chapters/${chapter.id}/edit`}>
+                                        <Button variant="ghost" size="sm" className="gap-2">
+                                            <Settings className="size-4" />
+                                            Manage
+                                        </Button>
+                                    </Link>
                                 </div>
                             </CardContent>
                         </Card>

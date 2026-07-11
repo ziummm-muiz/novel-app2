@@ -27,9 +27,17 @@ export default async function DashboardPage() {
 
         return (
             <div className="p-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-black">Admin Overview</h1>
-                    <p className="text-muted-foreground">Platform-wide statistics and management.</p>
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 className="text-3xl font-black">Admin Overview</h1>
+                        <p className="text-muted-foreground">Platform-wide statistics and management.</p>
+                    </div>
+                    <Link href="/dashboard/users">
+                        <Button variant="outline" className="gap-2">
+                            <Users className="size-4" />
+                            Manage Users
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -70,6 +78,7 @@ export default async function DashboardPage() {
         .from("novels")
         .select("*")
         .eq("author_id", user.id)
+        .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
     const totalNovels = novels?.length || 0;
@@ -80,7 +89,8 @@ export default async function DashboardPage() {
         const { count } = await supabase
             .from("chapters")
             .select("*", { count: 'exact', head: true })
-            .in("novel_id", novelIds);
+            .in("novel_id", novelIds)
+            .is("deleted_at", null);
         totalChapters = count || 0;
     }
 

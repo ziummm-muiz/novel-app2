@@ -13,6 +13,10 @@ export async function createNovel(formData: FormData) {
     throw new Error("You must be logged in to create a novel")
   }
 
+  // 1b. Check restriction
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
+
   // 2. Extract form data
   const title = formData.get("title") as string
   const synopsis = formData.get("synopsis") as string
@@ -76,6 +80,9 @@ export async function createChapter(formData: FormData) {
     throw new Error("You must be logged in")
   }
 
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
+
   const novelId = formData.get("novelId") as string
   const title = formData.get("title") as string
   const chapterNumberStr = formData.get("chapterNumber") as string
@@ -117,6 +124,111 @@ export async function createChapter(formData: FormData) {
   }
 
   revalidatePath(`/dashboard/write/${novelId}/chapters`)
+  redirect(`/dashboard/write/${novelId}/chapters`)
+}
+
+export async function updateNovel(novelId: string, formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("You must be logged in")
+    
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
+
+  const title = formData.get("title") as string
+  const synopsis = formData.get("synopsis") as string
+  const coverFile = formData.get("cover") as File | null
+  const genresString = formData.get("genres") as string 
+
+  if (!title || !synopsis) throw new Error("Missing required fields")
+
+  const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
+  if (novelError || novel?.author_id !== user.id) throw new Error("Unauthorized")
+
+  let updateData: any = {
+    title,
+    synopsis,
+    genres: genresString ? JSON.parse(genresString) : []
+  }
+
+  if (coverFile && coverFile.size > 0) {
+    const fileExt = coverFile.name.split('.').pop()
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`
+    const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, coverFile)
+    if (!uploadError) {
+      const { data: { publicUrl } } = supabase.storage.from('covers').getPublicUrl(fileName)
+      updateData.cover_url = publicUrl
+    }
+  }
+
+  const { error } = await supabase.from('novels').update(updateData).eq('id', novelId)
+  if (error) throw new Error("Failed to update novel")
+
+  revalidatePath(`/dashboard`)
+  revalidatePath(`/dashboard/write/${novelId}/chapters`)
+  revalidatePath(`/novel/${novelId}`)
+  redirect(`/dashboard/write/${novelId}/chapters`)
+}
+
+export async function softDeleteNovel(novelId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("You must be logged in")
+
+  const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
+  if (novelError || novel?.author_id !== user.id) throw new Error("Unauthorized")
+
+  const { error } = await supabase.from('novels').update({ deleted_at: new Date().toISOString() }).eq('id', novelId)
+  if (error) throw new Error("Failed to delete novel")
+
+  revalidatePath(`/dashboard`)
+  redirect(`/dashboard`)
+}
+
+export async function updateChapter(novelId: string, chapterId: string, formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("You must be logged in")
+
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
+  if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
+
+  const title = formData.get("title") as string
+  const chapterNumberStr = formData.get("chapterNumber") as string
+  const content = formData.get("content") as string
+
+  if (!title || !chapterNumberStr || !content) throw new Error("Missing required fields")
+
+  const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
+  if (novelError || novel?.author_id !== user.id) throw new Error("Unauthorized")
+
+  const { error } = await supabase.from('chapters').update({
+    title,
+    chapter_number: parseInt(chapterNumberStr),
+    content_url: content
+  }).eq('id', chapterId)
+
+  if (error) throw new Error("Failed to update chapter")
+
+  revalidatePath(`/dashboard/write/${novelId}/chapters`)
+  revalidatePath(`/novel/${novelId}`)
+  revalidatePath(`/novel/${novelId}/chapter/${chapterId}`)
+  redirect(`/dashboard/write/${novelId}/chapters`)
+}
+
+export async function softDeleteChapter(novelId: string, chapterId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("You must be logged in")
+
+  const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
+  if (novelError || novel?.author_id !== user.id) throw new Error("Unauthorized")
+
+  const { error } = await supabase.from('chapters').update({ deleted_at: new Date().toISOString() }).eq('id', chapterId)
+  if (error) throw new Error("Failed to delete chapter")
+
+  revalidatePath(`/dashboard/write/${novelId}/chapters`)
+  revalidatePath(`/novel/${novelId}`)
   redirect(`/dashboard/write/${novelId}/chapters`)
 }
 

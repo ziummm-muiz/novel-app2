@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
+import CommentsSection from "@/components/web/comments-section";
 
 export default async function ChapterPage({ params }: { params: Promise<{ novelId: string, chapterNumber: string }> }) {
   const { novelId, chapterNumber } = await params;
@@ -40,12 +41,20 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
     .from("chapters")
     .select("chapter_number")
     .eq("novel_id", novelId)
+    .is("deleted_at", null)
     .order("chapter_number", { ascending: true });
 
   const chaptersArray = allChapters?.map(c => c.chapter_number) || [];
   
   const prevChapter = chaptersArray.includes(chapterNum - 1) ? chapterNum - 1 : null;
   const nextChapter = chaptersArray.includes(chapterNum + 1) ? chapterNum + 1 : null;
+
+  // Fetch comments
+  const { data: comments } = await supabase
+    .from("comments")
+    .select(`*, profiles(username, full_name, avatar_url), comment_likes(user_id)`)
+    .eq("target_id", chapter.id)
+    .order("created_at", { ascending: false });
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 min-h-screen flex flex-col animate-in fade-in duration-500">
@@ -106,6 +115,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
         ) : (
           <div />
         )}
+      </div>
+
+      {/* Comments Section */}
+      <div className="mt-16 bg-muted/10 p-8 rounded-3xl border border-border">
+        <CommentsSection targetId={chapter.id} initialComments={comments || []} userId={user?.id} />
       </div>
 
     </div>

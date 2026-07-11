@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { FollowButton } from './follow-button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BookOpen, Users, PenTool, LayoutGrid } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { BookOpen, Users, PenTool, LayoutGrid, MessageSquare } from 'lucide-react'
 
 export default async function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params
@@ -102,12 +103,20 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         </div>
 
         {/* Action Button */}
-        <div className="pt-2">
+        <div className="pt-2 flex items-center gap-3">
           <FollowButton 
             targetUserId={userId} 
             initialIsFollowing={isFollowing} 
             currentUserId={currentUser?.id} 
           />
+          {currentUser && currentUser.id !== userId && (
+            <Link href={`/chats?userId=${userId}`}>
+              <Button variant="outline" className="rounded-full">
+                <MessageSquare className="size-4 mr-2" />
+                Message
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
