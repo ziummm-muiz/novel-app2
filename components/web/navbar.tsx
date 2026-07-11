@@ -19,6 +19,10 @@ export default function Navbar({ user, profile }: { user: SupabaseUser | null, p
     { name: "Blog", href: "/blogs" },
   ];
 
+  if (user) {
+    navLinks.push({ name: "Library", href: "/library" });
+  }
+
   return (
     <nav className="w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border py-4 px-6 flex items-center justify-between fixed top-0 left-0 z-50">
       {/* Left section: Logo + Links */}

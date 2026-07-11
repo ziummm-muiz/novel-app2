@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import NovelReviews from "@/components/web/novel-reviews";
 import CommentsSection from "@/components/web/comments-section";
+import LibraryStatusButton from "@/components/web/library-status-button";
 
 export default async function NovelPage({ params }: { params: Promise<{ novelId: string }> }) {
   const { novelId } = await params;
@@ -45,6 +46,17 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     .eq("target_id", novelId)
     .order("created_at", { ascending: false });
 
+  let libraryStatus: 'reading' | 'completed' | 'favourite' | 'none' = 'none';
+  if (user) {
+    const { data: lib } = await supabase
+      .from('user_library')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('novel_id', novelId)
+      .single()
+    if (lib) libraryStatus = lib.status as any
+  }
+
   const authorName = novel.profiles?.full_name || novel.profiles?.username || "Unknown Author";
   
   const firstChapter = chapters?.[0]?.chapter_number;
@@ -77,14 +89,22 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
             ))}
           </div>
 
-          {firstChapter !== undefined && (
-            <Link href={`/novel/${novel.id}/chapter/${firstChapter}`} className="inline-block mt-4">
-              <Button size="lg" className="rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
-                <BookOpen className="mr-2 size-5" />
-                Start Reading
-              </Button>
-            </Link>
-          )}
+          <div className="flex flex-wrap items-center gap-4 mt-6">
+            {firstChapter !== undefined && (
+              <Link href={`/novel/${novel.id}/chapter/${firstChapter}`} className="inline-block">
+                <Button size="lg" className="rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+                  <BookOpen className="mr-2 size-5" />
+                  Start Reading
+                </Button>
+              </Link>
+            )}
+            
+            <LibraryStatusButton 
+              novelId={novel.id} 
+              initialStatus={libraryStatus} 
+              userId={user?.id} 
+            />
+          </div>
         </div>
       </div>
 
