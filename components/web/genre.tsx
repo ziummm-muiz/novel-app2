@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { APP_GENRES } from "@/lib/constants";
 import {
   Carousel,
   CarouselContent,
@@ -8,19 +9,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-
-// 1. Predefined list of genres for your platform
-export const APP_GENRES = [
-    "Fantasy",
-    "Romance",
-    "Sci-Fi",
-    "Action",
-    "Mystery",
-    "Horror",
-    "Thriller",
-    "LitRPG",
-    "Historical"
-];
 
 // 2. Query function to fetch novels that contain the specific genre
 async function getNovelsByGenre(genre: string) {

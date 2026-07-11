@@ -4,18 +4,22 @@ import { signout } from "@/app/auth/actions/actions";
 import { User as UserIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
-export default function AuthButton({ user }: { user: SupabaseUser | null }) {
+export default function AuthButton({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
 
     if (user) {
         return (
             <div className="flex items-center gap-4">
                 <Link href={'/dashboard'}>
-                <div className="flex items-center gap-2 border border-border px-3 py-1.5 rounded-full bg-background">
-                    <div className="flex items-center justify-center bg-muted rounded-full p-1.5">
-                        <UserIcon className="size-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 border border-border px-3 py-1.5 rounded-full bg-background hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-center bg-muted rounded-full overflow-hidden size-8 shrink-0 border border-border">
+                        {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            <UserIcon className="size-4 text-muted-foreground" />
+                        )}
                     </div>
-                    <span className="text-sm font-medium text-foreground">
-                        {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                    <span className="text-sm font-medium text-foreground pr-1">
+                        {profile?.full_name || profile?.username || user.email?.split('@')[0]}
                     </span>
                 </div>
                 </Link>

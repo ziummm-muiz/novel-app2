@@ -7,7 +7,7 @@ import Coins from './coins';
 
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
-export default function Navbar({ user }: { user: SupabaseUser | null }) {
+export default function Navbar({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
 
   const pathname = usePathname()
 
@@ -52,7 +52,7 @@ export default function Navbar({ user }: { user: SupabaseUser | null }) {
       {/* Right section: Coins + Auth */}
       <div className="flex items-center gap-6">
         <Coins/>
-        <AuthButton user={user} />    
+        <AuthButton user={user} profile={profile} />    
       </div>
     </nav>
   )
