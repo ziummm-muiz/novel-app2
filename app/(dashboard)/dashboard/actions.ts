@@ -40,7 +40,12 @@ export async function createNovel(formData: FormData) {
     .from('covers')
     .getPublicUrl(fileName)
 
-  // 4. Save Novel to Database
+  // 4. Ensure profile exists (to prevent foreign key errors)
+  await supabase
+    .from('profiles')
+    .upsert({ id: user.id }, { onConflict: 'id' })
+
+  // 5. Save Novel to Database
   const genres = genresString ? JSON.parse(genresString) : []
   const { data: novel, error: insertError } = await supabase
     .from('novels')
@@ -149,6 +154,7 @@ export async function updateProfileSettings(formData: FormData) {
   }
 
   const updateData: any = {
+    id: user.id, // Required for upsert
     full_name: fullName,
     username: username
   }
@@ -159,8 +165,7 @@ export async function updateProfileSettings(formData: FormData) {
 
   const { error } = await supabase
     .from('profiles')
-    .update(updateData)
-    .eq('id', user.id)
+    .upsert(updateData, { onConflict: 'id' })
 
   if (error) {
     console.error("Error updating profile:", error)

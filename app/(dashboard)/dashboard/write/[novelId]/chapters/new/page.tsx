@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { createChapter } from "../../../actions"
+import { createChapter } from "../../../../actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"

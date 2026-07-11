@@ -6,6 +6,7 @@ import AuthButton from './authButton';
 import Coins from './coins';
 
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import { BookOpen } from 'lucide-react';
 
 export default function Navbar({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
 
@@ -23,9 +24,12 @@ export default function Navbar({ user, profile }: { user: SupabaseUser | null, p
       {/* Left section: Logo + Links */}
       <div className="flex items-center gap-10">
         {/*  logo  */}
-        <Link href={'/'}>
-          <h1 className="text-2xl font-bold text-primary tracking-tight">Web Novels</h1>
-        </Link>
+                <div className="p-6">
+                    <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                        <BookOpen className="text-primary size-6" />
+                        <span>NovelApp<span className="text-primary">.</span></span>
+                    </Link>
+                </div>
 
         {/* Nav Links */}
         <ul className="flex items-center gap-6 text-sm font-medium">
