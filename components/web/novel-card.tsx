@@ -19,7 +19,7 @@ export interface NovelCardProps {
 export default function NovelCard({ novel }: NovelCardProps) {
   // Try to use the first genre as a badge
   const primaryGenre = novel.genres && novel.genres.length > 0 ? novel.genres[0] : null;
-  const authorName = novel.author?.username || novel.author?.full_name || "Anonymous";
+  const authorName = novel.author?.username || "Anonymous";
 
   return (
     <Link href={`/novel/${novel.id}`} className="group flex flex-col h-full rounded-2xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5">

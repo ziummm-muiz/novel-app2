@@ -61,7 +61,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     if (lib) libraryStatus = lib.status as any
   }
 
-  const authorName = novel.profiles?.full_name || novel.profiles?.username || "Unknown Author";
+  const authorName = novel.profiles?.username || "Unknown Author";
   
   const firstChapter = chapters?.[0]?.chapter_number;
 

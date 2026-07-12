@@ -71,7 +71,7 @@ export default async function LibraryPage() {
           const novel = item.novels
           if (!novel) return null
           
-          const authorName = novel.profiles?.full_name || novel.profiles?.username || "Unknown"
+          const authorName = novel.profiles?.username || "Unknown"
           const lastChapter = historyMap.get(novel.id)
 
           return (

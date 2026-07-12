@@ -132,11 +132,11 @@ export default function NovelReviews({ novelId, initialReviews, userId }: { nove
                     {review.profiles?.avatar_url ? (
                       <img src={review.profiles.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
-                      (review.profiles?.full_name || review.profiles?.username || "?").charAt(0).toUpperCase()
+                      (review.profiles?.username || "?").charAt(0).toUpperCase()
                     )}
                   </div>
                   <div>
-                    <div className="font-semibold">{review.profiles?.full_name || review.profiles?.username || "Unknown"}</div>
+                    <div className="font-semibold">{review.profiles?.username || "Unknown"}</div>
                     <div className="text-xs text-muted-foreground" suppressHydrationWarning>
                       {new Date(review.created_at).toLocaleDateString()}
                     </div>

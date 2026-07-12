@@ -53,6 +53,13 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image size exceeds the 5MB limit. Please select a smaller file.")
+        e.target.value = ""
+        setPreviewUrl(initialNovel?.cover_url || null)
+        return
+      }
+      setError(null)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
     }
@@ -138,6 +145,7 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
                 <div className="flex flex-col items-center justify-center text-muted-foreground p-4 text-center">
                   <ImagePlus className="size-8 mb-2 group-hover:text-primary transition-colors" />
                   <span className="text-sm font-medium">Click to upload cover</span>
+                  <span className="text-xs mt-1 text-primary font-semibold">Max size: 5MB</span>
                 </div>
               )}
               {previewUrl && (

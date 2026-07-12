@@ -65,7 +65,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
     }
   }
 
-  const displayName = profile.full_name || profile.username || "Anonymous Writer"
+  const displayName = profile.username || "Anonymous Writer"
   const displayUsername = profile.username ? `@${profile.username}` : ""
 
   return (

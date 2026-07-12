@@ -12,6 +12,18 @@ export function SettingsForm({ profile, email }: { profile: any, email: string }
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError("Profile picture size exceeds the 2MB limit. Please select a smaller file.")
+        e.target.value = ""
+      } else {
+        setError(null)
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -68,8 +80,9 @@ export function SettingsForm({ profile, email }: { profile: any, email: string }
               type="file" 
               accept="image/png, image/jpeg, image/webp" 
               className="w-full max-w-sm cursor-pointer"
+              onChange={handleAvatarChange}
             />
-            <p className="text-xs text-muted-foreground">Recommended size: 256x256px. Max 2MB.</p>
+            <p className="text-xs text-muted-foreground">Recommended size: 256x256px. <span className="text-primary font-semibold">Max 2MB.</span></p>
           </div>
         </div>
       </div>

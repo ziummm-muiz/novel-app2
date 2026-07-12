@@ -109,13 +109,13 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
           {comment.profiles?.avatar_url ? (
             <img src={comment.profiles.avatar_url} alt="avatar" className="w-full h-full object-cover" />
           ) : (
-            (comment.profiles?.full_name || comment.profiles?.username || "?").charAt(0).toUpperCase()
+            (comment.profiles?.username || "?").charAt(0).toUpperCase()
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="bg-card border border-border p-4 rounded-2xl shadow-sm">
             <div className="flex justify-between items-start mb-2">
-              <span className="font-semibold text-sm">{comment.profiles?.full_name || comment.profiles?.username || "Unknown"}</span>
+              <span className="font-semibold text-sm">{comment.profiles?.username || "Unknown"}</span>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                 {new Date(comment.created_at).toLocaleDateString()}
               </span>

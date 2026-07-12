@@ -36,15 +36,15 @@ export default async function ChapterManagementPage({ params }: { params: Promis
         <div className="max-w-5xl mx-auto px-6 py-12">
             
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 bg-muted/30 p-8 rounded-3xl border border-border">
-                <div className="flex gap-6 items-center">
-                    <div className="w-24 aspect-2/3 bg-muted rounded-md overflow-hidden shrink-0 shadow-sm border border-border">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-muted/30 p-8 rounded-3xl border border-border">
+                <div className="flex flex-col sm:flex-row gap-6 sm:items-center flex-1 min-w-0">
+                    <div className="w-24 aspect-2/3 bg-muted rounded-md overflow-hidden shrink-0 shadow-sm border border-border hidden sm:block">
                         {novel.cover_url && <img src={novel.cover_url} alt="cover" className="w-full h-full object-cover" />}
                     </div>
-                    <div>
-                        <h1 className="text-3xl font-black mb-2">{novel.title}</h1>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-3xl font-black mb-2 truncate">{novel.title}</h1>
                         <p className="text-muted-foreground mb-4 line-clamp-2 max-w-xl">{novel.synopsis}</p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {novel.genres?.map((g: string) => (
                                 <span key={g} className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-1 rounded-sm">
                                     {g}
@@ -54,7 +54,7 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                     </div>
                 </div>
                 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
                     <Link href={`/dashboard/write/${novelId}/chapters/new`}>
                         <Button className="w-full gap-2">
                             <PlusCircle className="size-4" />
