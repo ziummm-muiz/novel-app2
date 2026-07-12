@@ -41,12 +41,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         Overview
                     </Link>
                     
-                    {!isAdmin && (
-                        <Link href="/dashboard/write/new" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors">
-                            <BookOpen className="size-4" />
-                            Write Novel
-                        </Link>
-                    )}
+                    <Link href="/dashboard/write/new" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors">
+                        <BookOpen className="size-4" />
+                        Write Novel
+                    </Link>
 
                     <Link href="/dashboard/blogs" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors">
                         <Edit className="size-4" />
@@ -92,13 +90,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                     <LayoutDashboard className="size-4" /> Overview
                                 </Link>
                             </DropdownMenuItem>
-                            {!isAdmin && (
-                                <DropdownMenuItem>
-                                    <Link href="/dashboard/write/new" className="w-full cursor-pointer flex items-center gap-2">
-                                        <BookOpen className="size-4" /> Write Novel
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem>
+                                <Link href="/dashboard/write/new" className="w-full cursor-pointer flex items-center gap-2">
+                                    <BookOpen className="size-4" /> Write Novel
+                                </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link href="/dashboard/blogs" className="w-full cursor-pointer flex items-center gap-2">
                                     <Edit className="size-4" /> Blogs
