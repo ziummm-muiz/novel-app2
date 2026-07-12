@@ -159,7 +159,6 @@ export default function SignUpPage() {
                         captionLayout="dropdown"
                         startMonth={new Date(1900, 0)}
                         endMonth={new Date()}
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
