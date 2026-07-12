@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -6,10 +10,53 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { signup } from "../actions/actions";
-import { BookOpen } from "lucide-react";
+import { signup, checkUsername } from "../actions/actions";
+import { BookOpen, CalendarIcon, Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export default function SignUpPage() {
+  const [date, setDate] = useState<Date>();
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!username || username.trim() === "") {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    setIsCheckingUsername(true);
+    const timeoutId = setTimeout(async () => {
+      const res = await checkUsername(username);
+      setUsernameAvailable(res.available);
+      setIsCheckingUsername(false);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [username]);
+
+  const calculateStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return score;
+    if (pass.length >= 8) score += 25;
+    if (/[A-Z]/.test(pass)) score += 25;
+    if (/[a-z]/.test(pass)) score += 25;
+    if (/[0-9]/.test(pass) || /[^A-Za-z0-9]/.test(pass)) score += 25;
+    return score;
+  };
+
+  const strength = calculateStrength(password);
+  
+  let strengthColor = "bg-border";
+  if (strength > 0 && strength <= 25) strengthColor = "bg-red-500";
+  else if (strength > 25 && strength <= 75) strengthColor = "bg-yellow-500";
+  else if (strength === 100) strengthColor = "bg-emerald-500";
+
   return (
     <main className="relative min-h-screen flex w-full bg-background text-foreground">
       {/* LEFT SECTION (Form) */}
@@ -49,9 +96,26 @@ export default function SignUpPage() {
                     id="username"
                     name="username"
                     placeholder="@johndoe"
-                    className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary"
+                    className={cn(
+                      "h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary",
+                      usernameAvailable === false && "border-red-500 focus-visible:ring-red-500",
+                      usernameAvailable === true && "border-emerald-500 focus-visible:ring-emerald-500"
+                    )}
                     required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
+                  {username && (
+                    <div className="mt-1.5 flex items-center text-xs">
+                      {isCheckingUsername ? (
+                        <span className="text-muted-foreground flex items-center gap-1"><Loader2 className="size-3 animate-spin" /> Checking availability...</span>
+                      ) : usernameAvailable === true ? (
+                        <span className="text-emerald-500 flex items-center gap-1"><CheckCircle2 className="size-3" /> Username is available</span>
+                      ) : usernameAvailable === false ? (
+                        <span className="text-red-500 flex items-center gap-1"><XCircle className="size-3" /> Username is taken</span>
+                      ) : null}
+                    </div>
+                  )}
                 </Field>
               </div>
 
@@ -81,13 +145,24 @@ export default function SignUpPage() {
 
                 <Field>
                   <FieldLabel htmlFor="dob" className="text-foreground font-medium mb-1.5 block">Date of Birth</FieldLabel>
-                  <Input
-                    id="dob"
-                    name="dob"
-                    type="date"
-                    className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary"
-                    required
-                  />
+                  <input type="hidden" name="dob" value={date ? format(date, "yyyy-MM-dd") : ""} />
+                  <Popover>
+                    <PopoverTrigger className={cn("w-full justify-start text-left font-normal h-12 rounded-xl bg-background border border-border shadow-xs hover:bg-muted/50 transition-colors flex items-center px-3", !date && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        captionLayout="dropdown"
+                        startMonth={new Date(1900, 0)}
+                        endMonth={new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </Field>
               </div>
 
@@ -95,26 +170,49 @@ export default function SignUpPage() {
                 <FieldLabel htmlFor="password" className="text-foreground font-medium mb-1.5 block">
                   Password
                 </FieldLabel>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  minLength={8}
-                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
-                  title="Must contain at least 8 characters, including uppercase, lowercase, numbers and symbols."
-                  className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary"
-                />
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Must be at least 8 characters with uppercase, lowercase, numbers, and symbols.
-                </p>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    required
+                    minLength={8}
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
+                    title="Must contain at least 8 characters, including uppercase, lowercase, numbers and symbols."
+                    className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                  </button>
+                </div>
+                
+                {/* Password Strength Meter */}
+                <div className="mt-3 space-y-1.5">
+                  <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+                    <div 
+                      className={cn("h-full transition-all duration-300 ease-in-out", strengthColor)} 
+                      style={{ width: `${strength}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Strength</span>
+                    <span>{strength === 100 ? "Strong" : strength > 25 ? "Fair" : strength > 0 ? "Weak" : ""}</span>
+                  </div>
+                </div>
               </Field>
             </FieldGroup>
 
             <Button
               type="submit"
-              className="mt-6 h-12 w-full rounded-xl text-base font-semibold transition-transform hover:scale-[1.02] active:scale-95 shadow-md"
+              disabled={usernameAvailable === false || isCheckingUsername}
+              className="mt-6 h-12 w-full rounded-xl text-base font-semibold transition-transform hover:scale-[1.02] active:scale-95 shadow-md disabled:opacity-50 disabled:pointer-events-none"
             >
               Create Account
             </Button>

@@ -102,3 +102,20 @@ export async function updatePassword(formData: FormData) {
 
   return redirect('/auth/login?message=Password updated successfully')
 }
+
+export async function checkUsername(username: string) {
+  if (!username || username.trim() === '') return { available: null }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('username', username)
+    .maybeSingle()
+
+  if (data) {
+    return { available: false }
+  }
+
+  return { available: true }
+}
