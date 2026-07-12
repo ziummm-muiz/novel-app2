@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
@@ -25,6 +25,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
 
   // Record reading history if logged in
   const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    redirect('/auth/login');
+  }
+
   if (user) {
     await supabase.from("reading_history").upsert({
       user_id: user.id,

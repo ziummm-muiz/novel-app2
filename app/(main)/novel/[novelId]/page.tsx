@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
@@ -33,6 +33,10 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     .order("chapter_number", { ascending: true });
 
   const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/auth/login');
+  }
 
   const { data: reviews } = await supabase
     .from("reviews")

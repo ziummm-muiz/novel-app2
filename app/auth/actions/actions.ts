@@ -19,7 +19,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/auth/login?error=Invalid login credentials')
+    redirect(`/auth/login?error=${encodeURIComponent(error.message)}`)
   }
 
   revalidatePath('/', 'layout')
@@ -52,12 +52,11 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    // Ideally we would return the error to the client, but for now redirect to error page
-    redirect('/error')
+    redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`)
   }
 
   revalidatePath('/', 'layout')
-  redirect('/')
+  redirect('/?message=Successfully signed up! Welcome to NovelApp.')
 }
 
 export async function signout() {
