@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Inter, Noto_Sans } from "next/font/google"
 import { Suspense } from "react"
+import type { Metadata } from "next"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -15,6 +16,30 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
+
+export const metadata: Metadata = {
+  title: {
+    default: 'NovelApp | Discover & Write Amazing Novels',
+    template: '%s | NovelApp'
+  },
+  description: 'A premium platform to discover, read, and write amazing novels. Join our community of readers and writers today.',
+  keywords: ['novel', 'reading', 'writing', 'books', 'stories', 'fiction', 'community'],
+  authors: [{ name: 'NovelApp Team' }],
+  creator: 'NovelApp',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://novelapp.com',
+    title: 'NovelApp | Discover & Write Amazing Novels',
+    description: 'A premium platform to discover, read, and write amazing novels.',
+    siteName: 'NovelApp',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NovelApp | Discover & Write Amazing Novels',
+    description: 'A premium platform to discover, read, and write amazing novels.',
+  },
+}
 
 export default function RootLayout({
   children,
