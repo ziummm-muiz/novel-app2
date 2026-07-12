@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -6,11 +5,11 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { forgotPassword } from "../actions/actions";
+import { updatePassword } from "../actions/actions";
 import { BookOpen } from "lucide-react";
 
-export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ message?: string, error?: string }> }) {
-  const { message, error } = await searchParams;
+export default async function UpdatePasswordPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
 
   return (
     <main className="relative min-h-screen flex w-full bg-background text-foreground">
@@ -30,10 +29,10 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
         
         <div className="relative z-10 max-w-xl mb-10">
           <h1 className="text-5xl font-black leading-tight tracking-tight text-white mb-6">
-            Get Back To <span className="text-primary">Writing.</span>
+            Secure Your <span className="text-primary">Account.</span>
           </h1>
           <p className="text-xl text-gray-200 drop-shadow">
-            Don't let a forgotten password stop your creative flow. Recover your account and continue your epic journey.
+            Set a new, strong password to protect your stories and readers.
           </p>
         </div>
       </section>
@@ -48,10 +47,10 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
 
           <div className="flex flex-col gap-2">
             <h2 className="text-3xl font-bold tracking-tight">
-              Reset Password
+              Update Password
             </h2>
             <p className="text-muted-foreground">
-              Enter your email address and we'll send you a link to reset your password.
+              Please enter your new password below.
             </p>
           </div>
 
@@ -61,21 +60,35 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
             </div>
           )}
 
-          {message && (
-            <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-600 dark:text-green-400 text-sm font-medium">
-              {message}
-            </div>
-          )}
-
-          <form action={forgotPassword} className="space-y-4">
+          <form action={updatePassword} className="space-y-4">
             <FieldGroup>
               <Field>
-                <FieldLabel className="text-foreground font-medium mb-1.5 block">Email</FieldLabel>
+                <FieldLabel className="text-foreground font-medium mb-1.5 block">New Password</FieldLabel>
                 <Input
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
                   required
+                  minLength={8}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
+                  title="Must contain at least 8 characters, including uppercase, lowercase, numbers and symbols."
+                  className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary"
+                />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Must be at least 8 characters with uppercase, lowercase, numbers, and symbols.
+                </p>
+              </Field>
+
+              <Field className="mt-4">
+                <FieldLabel className="text-foreground font-medium mb-1.5 block">Confirm New Password</FieldLabel>
+                <Input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  minLength={8}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
+                  title="Must contain at least 8 characters, including uppercase, lowercase, numbers and symbols."
                   className="h-12 rounded-xl bg-background border-border shadow-xs focus-visible:ring-primary"
                 />
               </Field>
@@ -85,18 +98,8 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
               type="submit"
               className="mt-6 h-12 w-full rounded-xl text-base font-semibold transition-transform hover:scale-[1.02] active:scale-95 shadow-md"
             >
-              Send Reset Link
+              Update Password
             </Button>
-
-            <p className="text-center text-sm text-muted-foreground mt-8">
-              Remembered your password?{" "}
-              <Link
-                href="/auth/login"
-                className="font-semibold text-primary hover:text-primary/80 transition-colors"
-              >
-                Sign In
-              </Link>
-            </p>
           </form>
         </div>
       </section>

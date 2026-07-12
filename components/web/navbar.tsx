@@ -26,7 +26,7 @@ export default function Navbar({
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Best Seller", href: "/best-seller" },
+    // { name: "Best Seller", href: "/best-seller" },
     { name: "Categories", href: "/categories" },
     { name: "Blog", href: "/blogs" },
   ];

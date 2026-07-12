@@ -5,11 +5,12 @@ export default function Hero() {
     return (
         <div className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
             {/* Background Image / Gradient */}
-            <div className="absolute inset-0 bg-linear-to-br from-indigo-950 via-purple-900 to-slate-950 z-0"></div>
+            <div className="absolute inset-0 bg-zinc-950 z-0"></div>
             <div 
-                className="absolute inset-0 opacity-40 mix-blend-overlay z-0 bg-cover bg-center"
-                style={{ backgroundImage: `url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070')` }}
+                className="absolute inset-0 opacity-40 z-0 bg-cover bg-center"
+                style={{ backgroundImage: `url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070')` }}
             ></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20 z-0"></div>
             
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl pt-10">
@@ -19,7 +20,7 @@ export default function Hero() {
                 </div>
                 
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 drop-shadow-md tracking-tight">
-                    Read Endless <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-400">Worlds.</span>
+                    Read Endless <span className="text-primary">Worlds.</span>
                 </h1>
                 
                 <p className="text-lg md:text-xl lg:text-2xl text-gray-200 mb-10 max-w-2xl drop-shadow">

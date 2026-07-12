@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -65,4 +66,40 @@ export async function signout() {
   
   revalidatePath('/', 'layout')
   redirect('/')
+}
+
+export async function forgotPassword(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  const origin = (await headers()).get('origin')
+  
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/auth/update-password`,
+  })
+
+  if (error) {
+    return redirect('/auth/forgot-password?error=Could not send reset email')
+  }
+
+  return redirect('/auth/forgot-password?message=Check your email to reset your password')
+}
+
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient()
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  if (password !== confirmPassword) {
+    return redirect('/auth/update-password?error=Passwords do not match')
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: password
+  })
+
+  if (error) {
+    return redirect('/auth/update-password?error=Could not update password')
+  }
+
+  return redirect('/auth/login?message=Password updated successfully')
 }

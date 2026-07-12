@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Calendar } from "lucide-react"
@@ -52,6 +53,10 @@ function BlogList({ blogs, emptyMessage }: { blogs: any[], emptyMessage: string 
 export default async function BlogsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/auth/login')
+  }
 
   // 1. Fetch Discover Blogs (Global feed)
   const { data: discoverBlogs } = await supabase

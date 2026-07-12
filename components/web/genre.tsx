@@ -1,13 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { APP_GENRES } from "@/lib/constants";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import NovelCard from "./novel-card";
 
@@ -73,42 +66,32 @@ export function GenreCarousel() {
     return (
         <section className="w-full my-8 relative">
             <h2 className="text-2xl font-bold mb-4">Explore Categories</h2>
-            <Carousel
-                opts={{
-                    align: "start",
-                    dragFree: true,
-                }}
-                className="w-full"
-            >
-                <CarouselContent className="-ml-4">
-                    {APP_GENRES.map((genre, index) => (
-                        <CarouselItem key={index} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-                            <Link href={`/categories/${genre.toLowerCase()}`}>
-                                <Card className="overflow-hidden border-none cursor-pointer group shadow-md hover:shadow-xl transition-all duration-300">
-                                    <CardContent className="p-0 aspect-4/5 relative flex items-center justify-center">
-                                        <img 
-                                            src={`/images/genres/${genre.toLowerCase().replace(/ /g, '-')}.png`} 
-                                            alt={genre} 
-                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
-                                        {/* Dark Overlay for text readability */}
-                                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
-                                        
-                                        {/* Text */}
-                                        <h3 className="relative z-10 text-white font-bold text-lg md:text-xl tracking-widest uppercase drop-shadow-lg text-center px-2">
-                                            {genre}
-                                        </h3>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <div className="hidden md:flex">
-                    <CarouselPrevious className="-left-4 lg:-left-12 bg-background border-border" />
-                    <CarouselNext className="-right-4 lg:-right-12 bg-background border-border" />
-                </div>
-            </Carousel>
+            
+            {/* Native scrollable container for better mobile support */}
+            <div className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {APP_GENRES.map((genre, index) => (
+                    <div key={index} className="shrink-0 w-36 sm:w-40 md:w-48 lg:w-56 snap-start">
+                        <Link href={`/categories/${genre.toLowerCase()}`}>
+                            <Card className="overflow-hidden border-none cursor-pointer group shadow-md hover:shadow-xl transition-all duration-300">
+                                <CardContent className="p-0 aspect-[4/5] relative flex items-center justify-center">
+                                    <img 
+                                        src={`/images/genres/${genre.toLowerCase().replace(/ /g, '-')}.png`} 
+                                        alt={genre} 
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    {/* Dark Overlay for text readability */}
+                                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                                    
+                                    {/* Text */}
+                                    <h3 className="relative z-10 text-white font-bold text-lg md:text-xl tracking-widest uppercase drop-shadow-lg text-center px-2">
+                                        {genre}
+                                    </h3>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    </div>
+                ))}
+            </div>
         </section>
     );
 }

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, User, MessageCircle } from "lucide-react"
@@ -12,6 +12,10 @@ export default async function IndividualBlogPage({ params }: { params: Promise<{
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/auth/login')
+  }
 
   const { data: blog, error } = await supabase
     .from("blogs")
