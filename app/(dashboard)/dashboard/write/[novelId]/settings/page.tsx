@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { updateNovel, softDeleteNovel } from "../../../actions"
+import { updateNovel } from "../../../actions"
+import { DeleteNovelButton } from "@/app/(dashboard)/dashboard/delete-novel-button"
 import { APP_GENRES } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,7 +17,6 @@ import { useRouter } from "next/navigation"
 export default function NovelSettingsPage({ params }: { params: Promise<{ novelId: string }> }) {
   const [novelId, setNovelId] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
   const [initialNovel, setInitialNovel] = useState<any>(null)
@@ -36,17 +36,26 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const { data } = await supabase
-      .from("novels")
-      .select("*")
-      .eq("id", id)
-      .eq("author_id", user.id)
+    // Check if current user is admin
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
       .single()
+
+    // Admins can edit any novel; authors can only edit their own
+    let query = supabase.from("novels").select("*").eq("id", id)
+    if (!profile?.is_admin) {
+      query = query.eq("author_id", user.id)
+    }
+    const { data } = await query.single()
 
     if (data) {
       setInitialNovel(data)
       setSelectedGenres(data.genres || [])
       if (data.cover_url) setPreviewUrl(data.cover_url)
+    } else {
+      router.push("/dashboard")
     }
   }
 
@@ -90,18 +99,6 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
     }
   }
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this novel? This will also remove all its chapters. This action cannot be undone.")) return
-
-    setIsDeleting(true)
-    try {
-      await softDeleteNovel(novelId)
-    } catch (err: any) {
-      console.error(err)
-      alert(err.message || "Failed to delete novel")
-      setIsDeleting(false)
-    }
-  }
 
   if (!initialNovel) {
     return <div className="p-12 text-center text-muted-foreground"><Loader2 className="size-6 animate-spin mx-auto" /></div>
@@ -219,12 +216,14 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
           <div>
             <h3 className="text-xl font-bold text-destructive mb-1">Danger Zone</h3>
             <p className="text-muted-foreground mb-6">
-              Deleting a novel is a permanent action. All chapters associated with this novel will also be deleted immediately.
+              This novel will be hidden from all readers. The data is preserved and can be restored by an administrator.
             </p>
-            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
-              {isDeleting ? "Deleting..." : "Delete Novel Permanently"}
-            </Button>
+            {initialNovel && (
+              <DeleteNovelButton
+                novelId={novelId}
+                novelTitle={initialNovel.title}
+              />
+            )}
           </div>
         </div>
       </div>

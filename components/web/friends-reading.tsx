@@ -54,8 +54,9 @@ export default async function FriendsReading() {
             id,
             last_read_at,
             profiles!inner(username, full_name, avatar_url),
-            novels!inner(id, title, cover_url)
+            novels!inner(id, title, cover_url, deleted_at)
         `)
+        .is('novels.deleted_at', null)
         .in('user_id', followingIds)
         .order('last_read_at', { ascending: false })
         .limit(4);

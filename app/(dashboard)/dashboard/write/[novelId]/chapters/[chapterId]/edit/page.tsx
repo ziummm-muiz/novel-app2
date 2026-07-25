@@ -1,6 +1,5 @@
 "use client"
 import { useState, useEffect } from "react"
-// import { updateChapter, softDeleteChapter } from "../../../../actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,13 +8,13 @@ import { Loader2, ArrowLeft, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { softDeleteChapter, updateChapter } from "@/app/(dashboard)/dashboard/actions"
+import { updateChapter } from "@/app/(dashboard)/dashboard/actions"
+import { DeleteChapterButton } from "../../delete-chapter-button"
 
 export default function EditChapterPage({ params }: { params: Promise<{ novelId: string, chapterId: string }> }) {
   const [novelId, setNovelId] = useState<string>("")
   const [chapterId, setChapterId] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
   const [initialChapter, setInitialChapter] = useState<any>(null)
@@ -34,14 +33,21 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    // Quick security check: does the user own the novel?
+    // Check if current user is admin
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single()
+
+    // Quick security check: does the user own the novel, or are they an admin?
     const { data: novel } = await supabase
       .from("novels")
       .select("author_id")
       .eq("id", nId)
       .single()
 
-    if (novel?.author_id !== user.id) {
+    if (novel?.author_id !== user.id && !profile?.is_admin) {
       router.push("/dashboard")
       return
     }
@@ -69,19 +75,6 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
       console.error(err)
       setError(err.message || "An unexpected error occurred.")
       setIsSubmitting(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this chapter? This action cannot be undone.")) return
-
-    setIsDeleting(true)
-    try {
-      await softDeleteChapter(novelId, chapterId)
-    } catch (err: any) {
-      console.error(err)
-      alert(err.message || "Failed to delete chapter")
-      setIsDeleting(false)
     }
   }
 
@@ -173,12 +166,17 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
           <div>
             <h3 className="text-xl font-bold text-destructive mb-1">Danger Zone</h3>
             <p className="text-muted-foreground mb-6">
-              Deleting a chapter removes it from the reading list. This action cannot be undone.
+              Deleting a chapter removes it from the reading list. The data is preserved and can be restored by an administrator.
             </p>
-            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
-              {isDeleting ? "Deleting..." : "Delete Chapter"}
-            </Button>
+            {initialChapter && (
+              <DeleteChapterButton
+                novelId={novelId}
+                chapterId={chapterId}
+                chapterTitle={initialChapter.title}
+                chapterNumber={initialChapter.chapter_number}
+                variant="destructive-outline"
+              />
+            )}
           </div>
         </div>
       </div>

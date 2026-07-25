@@ -11,6 +11,7 @@ export default async function TrendingNovels() {
     const { data: novels, error } = await supabase
         .from("novels")
         .select("*")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(10);
 

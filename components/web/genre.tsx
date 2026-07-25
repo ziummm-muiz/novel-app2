@@ -12,6 +12,7 @@ async function getNovelsByGenre(genre: string) {
         .from("novels")
         .select("*, author:profiles(username, full_name)")
         .contains("genres", [genre])
+        .is("deleted_at", null)
         .limit(4) // Limit to 4 for the homepage preview
         .order("created_at", { ascending: false });
 

@@ -2,8 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlusCircle, Settings, BookOpen } from "lucide-react";
+import { PlusCircle, Settings, BookOpen, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
+import { DeleteChapterButton } from "./delete-chapter-button";
 
 export default async function ChapterManagementPage({ params }: { params: Promise<{ novelId: string }> }) {
     const { novelId } = await params;
@@ -90,25 +91,31 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                 ) : (
                     chapters.map((chapter) => (
                         <Card key={chapter.id} className="border-border hover:border-primary transition-colors">
-                            <CardContent className="p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-muted rounded flex items-center justify-center font-black text-xl text-muted-foreground">
+                            <CardContent className="p-4 flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className="w-12 h-12 bg-muted rounded flex items-center justify-center font-black text-xl text-muted-foreground shrink-0">
                                         {chapter.chapter_number}
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg">{chapter.title}</h3>
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-lg truncate">{chapter.title}</h3>
                                         <p className="text-sm text-muted-foreground">
                                             Published on {new Date(chapter.published_at).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
-                                <div>
+                                <div className="flex items-center gap-2 shrink-0">
                                     <Link href={`/dashboard/write/${novelId}/chapters/${chapter.id}/edit`}>
                                         <Button variant="ghost" size="sm" className="gap-2">
-                                            <Settings className="size-4" />
-                                            Manage
+                                            <Pencil className="size-4" />
+                                            Edit
                                         </Button>
                                     </Link>
+                                    <DeleteChapterButton
+                                        novelId={novelId}
+                                        chapterId={chapter.id}
+                                        chapterTitle={chapter.title}
+                                        chapterNumber={chapter.chapter_number}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>

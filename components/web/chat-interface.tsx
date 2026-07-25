@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { sendMessage } from "@/app/actions/messages"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/navigation"
 import { User, Send, MessageSquare, ArrowLeft, Search, X } from "lucide-react"
 
 type ProfileInfo = {
@@ -39,6 +40,7 @@ export default function ChatInterface({
   const [conversationTexts, setConversationTexts] = useState<Record<string, string[]>>({})
   const [isLoading, setIsLoading] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   // 1. Fetch Conversations
   useEffect(() => {
@@ -118,6 +120,7 @@ export default function ChatInterface({
         const unreadIds = data.filter(m => m.receiver_id === currentUser.id && !m.is_read).map(m => m.id)
         if (unreadIds.length > 0) {
           await supabase.from("messages").update({ is_read: true }).in("id", unreadIds)
+          router.refresh()
         }
       }
     }
@@ -150,7 +153,7 @@ export default function ChatInterface({
             
             // Mark as read if received
             if (newMsg.receiver_id === currentUser.id) {
-              supabase.from("messages").update({ is_read: true }).eq("id", newMsg.id)
+              supabase.from("messages").update({ is_read: true }).eq("id", newMsg.id).then(() => router.refresh())
             }
           }
 
@@ -159,7 +162,7 @@ export default function ChatInterface({
           
           setConversationTexts(prev => ({
             ...prev,
-            [otherId]: [...(prev[otherId] || []), newMsg.message_text]
+            [otherId]: [newMsg.message_text, ...(prev[otherId] || [])]
           }))
           
           setConversations(prev => {
@@ -208,7 +211,7 @@ export default function ChatInterface({
     // Optimistically update conversation text
     setConversationTexts(prev => ({
       ...prev,
-      [activeUser.id]: [...(prev[activeUser.id] || []), msgText]
+      [activeUser.id]: [msgText, ...(prev[activeUser.id] || [])]
     }))
 
     // Optimistically move activeUser to top of conversations list
@@ -326,7 +329,9 @@ export default function ChatInterface({
                     <div className="font-bold truncate text-sm">
                       {displayName}
                     </div>
-                    {profile.username && <div className={`text-xs truncate ${isActive ? "text-primary/70" : "text-muted-foreground"}`}>@{profile.username}</div>}
+                    <div className={`text-xs truncate ${isActive ? "text-primary/70" : "text-muted-foreground"}`}>
+                      {conversationTexts[profile.id]?.[0] || (profile.username ? `@${profile.username}` : "")}
+                    </div>
                     {matchedSnippet}
                   </div>
                 </button>
