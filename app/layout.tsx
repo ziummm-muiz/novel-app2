@@ -17,7 +17,10 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://novel-app2.vercel.app/'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'NovelApp | Discover & Write Amazing Novels',
     template: '%s | NovelApp'
@@ -29,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://novelapp.com',
+    url: siteUrl,
     title: 'NovelApp | Discover & Write Amazing Novels',
     description: 'A premium platform to discover, read, and write amazing novels.',
     siteName: 'NovelApp',

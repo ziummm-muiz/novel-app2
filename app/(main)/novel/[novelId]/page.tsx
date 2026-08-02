@@ -85,7 +85,16 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {novel.maturity_rating && (
+              <span className={`px-3 py-1 text-white text-sm rounded-full font-bold shadow-sm ${
+                novel.maturity_rating === 'R18+' ? 'bg-red-600' :
+                novel.maturity_rating === 'PG-13' ? 'bg-amber-600' :
+                'bg-emerald-600'
+              }`}>
+                {novel.maturity_rating}
+              </span>
+            )}
             {novel.genres?.map((genre: string) => (
               <span key={genre} className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded-full font-medium">
                 {genre}
@@ -156,7 +165,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
         {/* Sidebar */}
         <div className="space-y-6">
           <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold mb-4">Novel Stats</h3>
+            <h3 className="font-bold mb-4">Novel Details</h3>
             <div className="space-y-4 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Chapters</span>
@@ -164,7 +173,17 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Status</span>
-                <span className="font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded text-xs">Ongoing</span>
+                <span className={`font-bold px-2 py-0.5 rounded text-xs capitalize ${
+                  novel.status === 'completed' 
+                    ? 'text-emerald-500 bg-emerald-500/10' 
+                    : 'text-amber-500 bg-amber-500/10'
+                }`}>
+                  {novel.status || 'Ongoing'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Maturity Rating</span>
+                <span className="font-semibold text-foreground">{novel.maturity_rating || 'PG-13'}</span>
               </div>
             </div>
           </div>

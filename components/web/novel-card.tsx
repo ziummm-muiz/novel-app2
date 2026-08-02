@@ -9,6 +9,7 @@ export interface NovelCardProps {
     cover_url?: string | null;
     genres?: string[] | null;
     status?: string | null;
+    maturity_rating?: string | null;
     author?: {
       username?: string | null;
       full_name?: string | null;
@@ -39,17 +40,28 @@ export default function NovelCard({ novel }: NovelCardProps) {
         )}
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+        <div className="absolute top-3 left-3 right-3 flex justify-between items-start gap-1 z-10">
           {primaryGenre && (
-            <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/10 shadow-sm">
+            <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-white/10 shadow-sm truncate">
               {primaryGenre}
             </span>
           )}
-          {novel.status === 'completed' && (
-            <span className="bg-green-500/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm ml-auto border border-white/10">
-              Done
-            </span>
-          )}
+          <div className="flex gap-1 items-center ml-auto">
+            {novel.maturity_rating && (
+              <span className={`backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-sm border border-white/10 ${
+                novel.maturity_rating === 'R18+' ? 'bg-red-600/80' :
+                novel.maturity_rating === 'PG-13' ? 'bg-amber-600/80' :
+                'bg-emerald-600/80'
+              }`}>
+                {novel.maturity_rating}
+              </span>
+            )}
+            {novel.status === 'completed' && (
+              <span className="bg-green-500/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md shadow-sm border border-white/10">
+                Done
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Glassmorphism Hover Overlay */}

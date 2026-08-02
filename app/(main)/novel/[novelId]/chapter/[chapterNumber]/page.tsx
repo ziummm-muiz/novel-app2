@@ -34,10 +34,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
     await supabase.from("reading_history").upsert({
       user_id: user.id,
       novel_id: novelId,
-      last_chapter_read: chapterNum,
+      chapter_id: chapter.id,
       last_read_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,novel_id'
     });
   }
 

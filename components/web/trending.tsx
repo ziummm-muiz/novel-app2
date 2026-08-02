@@ -26,15 +26,20 @@ export default async function TrendingNovels() {
 
     return (
         <section className="w-full my-8">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span className="text-orange-500">🔥</span> Trending This Month
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <span className="text-orange-500">🔥</span> Trending This Week
+                </h2>
+                <p className="text-xs text-muted-foreground font-medium">
+                    Ranked by recent reader engagement & chapter activity
+                </p>
+            </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
                 {novels.map((novel, index) => (
                     <Link href={`/novel/${novel.id}`} key={novel.id} className="group block">
-                        <Card className="border-none shadow-none bg-transparent hover:bg-muted/50 transition-colors duration-200">
-                            <CardContent className="p-3 flex items-center gap-4">
+                        <Card className="border-none shadow-sm bg-card/60 backdrop-blur-sm border border-border/40 hover:bg-muted/50 transition-colors duration-200">
+                            <CardContent className="p-3.5 flex items-center gap-4">
                                 {/* Rank Number */}
                                 <div className={`w-8 shrink-0 text-center font-black text-2xl sm:text-3xl ${
                                     index === 0 ? 'text-amber-500' : 
@@ -65,14 +70,28 @@ export default async function TrendingNovels() {
                                         {novel.synopsis || "No synopsis available for this novel."}
                                     </p>
                                     
-                                    {/* Top Genre Tag */}
-                                    {novel.genres && novel.genres.length > 0 && (
-                                        <div className="mt-2 flex">
+                                    {/* Genre & Rating Tags */}
+                                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                                        {novel.genres && novel.genres.length > 0 && (
                                             <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary px-2 py-0.5 rounded-sm">
                                                 {novel.genres[0]}
                                             </span>
-                                        </div>
-                                    )}
+                                        )}
+                                        {novel.maturity_rating && (
+                                            <span className={`text-[10px] font-bold uppercase tracking-wider text-white px-1.5 py-0.5 rounded-sm ${
+                                                novel.maturity_rating === 'R18+' ? 'bg-red-600' :
+                                                novel.maturity_rating === 'PG-13' ? 'bg-amber-600' :
+                                                'bg-emerald-600'
+                                            }`}>
+                                                {novel.maturity_rating}
+                                            </span>
+                                        )}
+                                        {novel.status === 'completed' && (
+                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-green-500/20 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded-sm">
+                                                Completed
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
