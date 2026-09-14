@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, User, MessageCircle } from "lucide-react"
 import ReactMarkdown from 'react-markdown'
 import BlogLikeButton from "@/components/web/blog-like-button"
-import BlogComments from "@/components/web/blog-comments"
+import BlogComments, { type CommentType } from "@/components/web/blog-comments"
 
 export default async function IndividualBlogPage({ params }: { params: Promise<{ blogId: string }> }) {
   const { blogId } = await params
@@ -122,7 +122,7 @@ export default async function IndividualBlogPage({ params }: { params: Promise<{
       {/* Comment Section */}
       <BlogComments 
         blogId={blogId} 
-        comments={comments || []} 
+        comments={(comments || []) as unknown as CommentType[]} 
         currentUserId={user?.id} 
       />
 

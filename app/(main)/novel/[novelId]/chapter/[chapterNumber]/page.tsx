@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import CommentsSection from "@/components/web/comments-section";
+import type { CommentWithMeta } from "@/types/engagement";
 
 export default async function ChapterPage({ params }: { params: Promise<{ novelId: string, chapterNumber: string }> }) {
   const { novelId, chapterNumber } = await params;
@@ -122,7 +123,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
 
       {/* Comments Section */}
       <div className="mt-16 bg-muted/10 p-8 rounded-3xl border border-border">
-        <CommentsSection targetId={chapter.id} initialComments={comments || []} userId={user?.id} />
+        <CommentsSection targetId={chapter.id} initialComments={(comments || []) as unknown as CommentWithMeta[]} userId={user?.id} />
       </div>
 
     </div>

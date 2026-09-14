@@ -7,17 +7,21 @@ import { Textarea } from "@/components/ui/textarea"
 import { User, MessageCircle, Heart, CornerDownRight, Trash2 } from "lucide-react"
 import Link from "next/link"
 
-type CommentType = {
+export type CommentType = {
   id: string
   parent_id: string | null
   content: string
-  created_at: string
-  user_id: string
+  created_at: string | null
+  user_id: string | null
   profiles: {
-    username: string
-    full_name: string
-    avatar_url: string
-  }
+    username: string | null
+    full_name: string | null
+    avatar_url: string | null
+  } | {
+    username: string | null
+    full_name: string | null
+    avatar_url: string | null
+  }[] | null
   blog_comment_likes: { user_id: string }[]
 }
 
@@ -81,14 +85,16 @@ function CommentItem({
     })
   }
 
-  const authorName = comment.profiles?.full_name || comment.profiles?.username || "Unknown User"
+  const profile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles
+  const authorName = profile?.full_name || profile?.username || "Unknown User"
+  const avatarUrl = profile?.avatar_url
 
   return (
     <div className="mt-4">
       <div className="flex gap-3">
         <Link href={`/user/${comment.user_id}`} className="size-8 rounded-full bg-muted overflow-hidden shrink-0 mt-1 border border-border hover:opacity-80 transition-opacity">
-          {comment.profiles?.avatar_url ? (
-            <img src={comment.profiles.avatar_url} alt={authorName} className="w-full h-full object-cover" />
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={authorName} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <User className="size-4 text-muted-foreground" />
@@ -103,7 +109,7 @@ function CommentItem({
                 {authorName}
               </Link>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                {new Date(comment.created_at).toLocaleDateString()}
+                {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}
               </span>
             </div>
             <p className="text-sm whitespace-pre-wrap leading-relaxed">{comment.content}</p>

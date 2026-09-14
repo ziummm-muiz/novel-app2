@@ -106,7 +106,7 @@ export default async function AdminUsersPage() {
                     </div>
                     
                     <div className="col-span-3 hidden md:flex items-center text-muted-foreground">
-                      {new Date(u.created_at).toLocaleDateString()}
+                      {u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}
                     </div>
                     
                     <div className="col-span-3 flex items-center">

@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import type { TablesUpdate } from "@/types/database.types"
+import type { TablesUpdate, TablesInsert } from "@/types/database.types"
 
 export async function createNovel(formData: FormData) {
   const supabase = await createClient()
@@ -270,7 +270,7 @@ export async function updateProfileSettings(formData: FormData) {
     avatarUrl = publicUrl
   }
 
-  const updateData: TablesUpdate<'profiles'> = {
+  const updateData: TablesInsert<'profiles'> = {
     id: user.id, // Required for upsert
     full_name: fullName,
     username: username

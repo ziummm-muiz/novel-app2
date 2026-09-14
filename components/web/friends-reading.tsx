@@ -110,7 +110,7 @@ export default async function FriendsReading() {
                                 <div className="bg-muted/50 p-3 flex items-center gap-3 border-b border-border">
                                     <div className="size-8 rounded-full bg-background flex items-center justify-center overflow-hidden shrink-0 border border-border">
                                         {record.profiles.avatar_url ? (
-                                            <img src={record.profiles.avatar_url} alt={record.profiles.username} className="w-full h-full object-cover" />
+                                            <img src={record.profiles.avatar_url} alt={record.profiles.username || "Avatar"} className="w-full h-full object-cover" />
                                         ) : (
                                             <UserIcon className="size-4 text-muted-foreground" />
                                         )}

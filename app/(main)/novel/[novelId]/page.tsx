@@ -6,6 +6,25 @@ import { BookOpen } from "lucide-react";
 import NovelReviews from "@/components/web/novel-reviews";
 import CommentsSection from "@/components/web/comments-section";
 import LibraryStatusButton from "@/components/web/library-status-button";
+import type { ReviewWithAuthor, CommentWithMeta } from "@/types/engagement";
+
+interface NovelWithAuthorDetail {
+  id: string;
+  title: string;
+  cover_url: string | null;
+  synopsis: string | null;
+  genres: string[] | null;
+  status: string | null;
+  maturity_rating: string | null;
+  author_id: string;
+  profiles: {
+    username: string | null;
+    full_name: string | null;
+  } | {
+    username: string | null;
+    full_name: string | null;
+  }[] | null;
+}
 
 export default async function NovelPage({ params }: { params: Promise<{ novelId: string }> }) {
   const { novelId } = await params;
@@ -25,6 +44,8 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     notFound();
   }
 
+  const typedNovel = novel as unknown as NovelWithAuthorDetail;
+
   const { data: chapters } = await supabase
     .from("chapters")
     .select("chapter_number, title, id, published_at")
@@ -40,13 +61,13 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
 
   const { data: reviews } = await supabase
     .from("reviews")
-    .select(`*, profiles(username, full_name, avatar_url)`)
+    .select(`*, profiles(id, username, full_name, avatar_url)`)
     .eq("novel_id", novelId)
     .order("created_at", { ascending: false });
 
   const { data: comments } = await supabase
     .from("comments")
-    .select(`*, profiles(username, full_name, avatar_url), comment_likes(user_id)`)
+    .select(`*, profiles(id, username, full_name, avatar_url), comment_likes(user_id)`)
     .eq("target_id", novelId)
     .order("created_at", { ascending: false });
 
@@ -57,11 +78,15 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
       .select('status')
       .eq('user_id', user.id)
       .eq('novel_id', novelId)
-    if (lib && (lib.status === 'reading' || lib.status === 'completed' || lib.status === 'favourite')) {
-      libraryStatus = lib.status
-    }
+      .maybeSingle();
 
-  const authorName = novel.profiles?.username || "Unknown Author";
+    if (lib && (lib.status === 'reading' || lib.status === 'completed' || lib.status === 'favourite')) {
+      libraryStatus = lib.status;
+    }
+  }
+
+  const author = Array.isArray(typedNovel.profiles) ? typedNovel.profiles[0] : typedNovel.profiles;
+  const authorName = author?.username || "Unknown Author";
   
   const firstChapter = chapters?.[0]?.chapter_number;
 
@@ -148,7 +173,7 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
                         <span className="font-medium text-foreground group-hover:text-primary transition-colors">{chapter.title}</span>
                       </div>
                       <span className="text-xs text-muted-foreground font-medium">
-                        {new Date(chapter.published_at).toLocaleDateString()}
+                        {chapter.published_at ? new Date(chapter.published_at).toLocaleDateString() : ''}
                       </span>
                     </Link>
                   ))}
@@ -191,10 +216,10 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
       </div>
 
       <div className="pt-16 space-y-16">
-        <NovelReviews novelId={novelId} initialReviews={reviews || []} userId={user?.id} />
+        <NovelReviews novelId={novelId} initialReviews={(reviews || []) as unknown as ReviewWithAuthor[]} userId={user?.id} />
         
         <div className="bg-muted/10 p-8 rounded-3xl border border-border">
-          <CommentsSection targetId={novelId} initialComments={comments || []} userId={user?.id} />
+          <CommentsSection targetId={novelId} initialComments={(comments || []) as unknown as CommentWithMeta[]} userId={user?.id} />
         </div>
       </div>
     </div>

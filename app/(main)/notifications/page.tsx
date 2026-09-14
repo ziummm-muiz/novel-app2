@@ -82,7 +82,7 @@ export default async function NotificationsPage() {
                 </p>
                 <div className="flex items-center gap-4 mt-2 pt-2">
                   <span className="text-xs text-muted-foreground flex items-center">
-                    {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                    {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: true }) : ''}
                   </span>
                   
                   {notification.link && (

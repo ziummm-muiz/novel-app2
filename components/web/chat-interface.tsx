@@ -10,18 +10,18 @@ import { User, Send, MessageSquare, ArrowLeft, Search, X } from "lucide-react"
 
 type ProfileInfo = {
   id: string
-  username: string
-  full_name: string
-  avatar_url: string
+  username: string | null
+  full_name: string | null
+  avatar_url: string | null
 }
 
 type Message = {
   id: string
-  sender_id: string
-  receiver_id: string
+  sender_id: string | null
+  receiver_id: string | null
   message_text: string
-  is_read: boolean
-  created_at: string
+  is_read: boolean | null
+  created_at: string | null
 }
 
 export default function ChatInterface({ 
@@ -64,6 +64,7 @@ export default function ChatInterface({
       
       data.forEach(m => {
         const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id
+        if (!otherId) return
         if (!userIds.has(otherId)) {
           userIds.add(otherId)
           orderedUserIds.push(otherId)
@@ -144,7 +145,7 @@ export default function ChatInterface({
           if (isRelevant) {
             setMessages(prev => {
               // Avoid duplicates if optimistic update already added it
-              if (prev.some(m => m.message_text === newMsg.message_text && Math.abs(new Date(m.created_at).getTime() - new Date(newMsg.created_at).getTime()) < 5000)) {
+              if (prev.some(m => m.message_text === newMsg.message_text && Math.abs(new Date(m.created_at || '').getTime() - new Date(newMsg.created_at || '').getTime()) < 5000)) {
                 return prev
               }
               return [...prev, newMsg]
@@ -159,22 +160,23 @@ export default function ChatInterface({
 
           // Move the conversation to the top of the list
           const otherId = newMsg.sender_id === currentUser.id ? newMsg.receiver_id : newMsg.sender_id
-          
-          setConversationTexts(prev => ({
-            ...prev,
-            [otherId]: [newMsg.message_text, ...(prev[otherId] || [])]
-          }))
-          
-          setConversations(prev => {
-            const index = prev.findIndex(p => p.id === otherId)
-            if (index > 0) {
-              const copy = [...prev]
-              const [item] = copy.splice(index, 1)
-              copy.unshift(item)
-              return copy
-            }
-            return prev
-          })
+          if (otherId) {
+            setConversationTexts(prev => ({
+              ...prev,
+              [otherId]: [newMsg.message_text, ...(prev[otherId] || [])]
+            }))
+            
+            setConversations(prev => {
+              const index = prev.findIndex(p => p.id === otherId)
+              if (index > 0) {
+                const copy = [...prev]
+                const [item] = copy.splice(index, 1)
+                copy.unshift(item)
+                return copy
+              }
+              return prev
+            })
+          }
         }
       )
       .subscribe()
@@ -354,7 +356,7 @@ export default function ChatInterface({
               </Button>
               <div className="size-10 rounded-full overflow-hidden shrink-0 border-2 border-background shadow-sm">
                 {activeUser.avatar_url ? (
-                  <img src={activeUser.avatar_url} alt={activeUser.username} className="w-full h-full object-cover" />
+                  <img src={activeUser.avatar_url} alt={activeUser.username || "User"} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
                     <User className="size-5 text-muted-foreground" />
@@ -412,7 +414,7 @@ export default function ChatInterface({
                           <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{msg.message_text}</p>
                         </div>
                         <span className={`text-[10px] mt-1.5 block font-medium opacity-0 group-hover:opacity-100 transition-opacity ${isMe ? "text-muted-foreground text-right mr-1" : "text-muted-foreground text-left ml-1"}`}>
-                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                         </span>
                       </div>
                     </div>

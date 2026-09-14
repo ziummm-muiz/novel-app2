@@ -60,20 +60,16 @@ export default async function DashboardBlogsPage() {
           {blogs.map((blog) => (
             <div key={blog.id} className="group relative rounded-2xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/40 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5 flex flex-col sm:flex-row">
               <div className="sm:w-56 h-40 sm:h-auto shrink-0 bg-muted relative overflow-hidden">
-                {blog.cover_image ? (
-                   <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                ) : (
-                   <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
-                     <BookOpen className="size-10 text-primary/30" />
-                   </div>
-                )}
+                <div className="w-full h-full bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
+                  <BookOpen className="size-10 text-primary/30" />
+                </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-center">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                   <div>
                     <h3 className="font-bold text-xl mb-1.5 group-hover:text-primary transition-colors line-clamp-1">{blog.title}</h3>
                     <p className="text-sm text-muted-foreground font-medium mb-3">Published on {new Date(blog.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                    {blog.excerpt && <p className="text-[15px] text-muted-foreground line-clamp-2 leading-relaxed">{blog.excerpt}</p>}
+                    <p className="text-[15px] text-muted-foreground line-clamp-2 leading-relaxed">{blog.content ? blog.content.substring(0, 150) : ""}</p>
                   </div>
                   <Link href={`/blogs/${blog.id}`} className="shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
                     <Button variant="secondary" className="w-full sm:w-auto rounded-full shadow-sm hover:shadow-md transition-all group-hover:bg-primary group-hover:text-primary-foreground">

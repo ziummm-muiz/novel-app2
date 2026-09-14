@@ -114,7 +114,8 @@ export async function POST(req: Request) {
     }
 
     // 7. Inspect atomic result
-    if (result?.status === 'DUPLICATE') {
+    const depositResult = result as { status?: string; message?: string } | null
+    if (depositResult?.status === 'DUPLICATE') {
       // Replay or duplicate webhook delivery caught idempotently
       console.info(`[Paystack Webhook] Idempotent duplicate delivery for reference: ${reference}`)
       return NextResponse.json(
@@ -123,9 +124,9 @@ export async function POST(req: Request) {
       )
     }
 
-    if (result?.status !== 'SUCCESS') {
-      console.error('[Paystack Webhook] Deposit rejected by database function:', result)
-      return NextResponse.json({ error: result?.message || 'Deposit could not be completed' }, { status: 400 })
+    if (depositResult?.status !== 'SUCCESS') {
+      console.error('[Paystack Webhook] Deposit rejected by database function:', depositResult)
+      return NextResponse.json({ error: depositResult?.message || 'Deposit could not be completed' }, { status: 400 })
     }
 
     console.info(`[Paystack Webhook] Deposit fulfilled: ${coinsToAdd} coins for user ${userId}, ref: ${reference}`)

@@ -16,7 +16,10 @@ interface LibraryItemWithNovel {
     profiles: {
       username: string | null
       full_name: string | null
-    } | null
+    } | {
+      username: string | null
+      full_name: string | null
+    }[] | null
   } | null
 }
 
@@ -62,13 +65,25 @@ export default async function LibraryPage() {
   // 2. Fetch reading history (for "Continue Reading" button)
   const { data: historyItems } = await supabase
     .from("reading_history")
-    .select("novel_id, last_chapter_read, last_read_at")
+    .select(`
+      novel_id,
+      last_read_at,
+      chapters:chapter_id (
+        chapter_number
+      )
+    `)
     .eq("user_id", user.id)
 
   const historyMap = new Map<string, number>()
-  historyItems?.forEach(h => {
-    if (h.novel_id && typeof h.last_chapter_read === "number") {
-      historyMap.set(h.novel_id, h.last_chapter_read)
+  interface HistoryRow {
+    novel_id: string | null
+    last_read_at: string | null
+    chapters: { chapter_number: number } | { chapter_number: number }[] | null
+  }
+  ((historyItems || []) as unknown as HistoryRow[]).forEach(h => {
+    const chapter = Array.isArray(h.chapters) ? h.chapters[0] : h.chapters
+    if (h.novel_id && chapter && typeof chapter.chapter_number === "number") {
+      historyMap.set(h.novel_id, chapter.chapter_number)
     }
   })
 
@@ -91,7 +106,8 @@ export default async function LibraryPage() {
           const novel = item.novels
           if (!novel) return null
           
-          const authorName = novel.profiles?.username || "Unknown"
+          const authorProfile = Array.isArray(novel.profiles) ? novel.profiles[0] : novel.profiles
+          const authorName = authorProfile?.username || "Unknown"
           const lastChapter = historyMap.get(novel.id)
 
           return (

@@ -97,9 +97,9 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                                         {chapter.chapter_number}
                                     </div>
                                     <div className="min-w-0">
-                                        <h3 className="font-bold text-lg truncate">{chapter.title}</h3>
+                                        <h3 className="font-bold text-lg truncate">{chapter.title || "Untitled"}</h3>
                                         <p className="text-sm text-muted-foreground">
-                                            Published on {new Date(chapter.published_at).toLocaleDateString()}
+                                            Published on {chapter.published_at ? new Date(chapter.published_at).toLocaleDateString() : 'Draft'}
                                         </p>
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@ export default async function ChapterManagementPage({ params }: { params: Promis
                                     <DeleteChapterButton
                                         novelId={novelId}
                                         chapterId={chapter.id}
-                                        chapterTitle={chapter.title}
+                                        chapterTitle={chapter.title || "Untitled"}
                                         chapterNumber={chapter.chapter_number}
                                     />
                                 </div>

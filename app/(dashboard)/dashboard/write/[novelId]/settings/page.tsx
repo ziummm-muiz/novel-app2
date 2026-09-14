@@ -167,7 +167,7 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
               <Textarea 
                 id="synopsis" 
                 name="synopsis" 
-                defaultValue={initialNovel.synopsis}
+                defaultValue={initialNovel.synopsis || ""}
                 required 
                 className="min-h-40 resize-none" 
               />

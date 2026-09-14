@@ -125,7 +125,7 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
             <Input 
               id="title" 
               name="title" 
-              defaultValue={initialChapter.title}
+              defaultValue={initialChapter.title || ""}
               required 
               className="text-lg py-6" 
             />
@@ -139,8 +139,8 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
           </div>
           <Textarea 
             id="content" 
-            name="content"
-            defaultValue={initialChapter.content_url} 
+            name="content" 
+            defaultValue={initialChapter.content_url || ""} 
             required 
             className="min-h-[60vh] resize-y font-mono text-sm leading-relaxed" 
           />
@@ -175,7 +175,7 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
               <DeleteChapterButton
                 novelId={novelId}
                 chapterId={chapterId}
-                chapterTitle={initialChapter.title}
+                chapterTitle={initialChapter.title || "Untitled"}
                 chapterNumber={initialChapter.chapter_number}
                 variant="destructive-outline"
               />
