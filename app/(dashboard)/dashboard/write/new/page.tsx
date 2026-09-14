@@ -50,9 +50,9 @@ export default function NewNovelPage() {
       
       await createNovel(formData)
       // Redirect happens in the server action
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || "An unexpected error occurred. Ensure the 'covers' bucket exists.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Ensure the 'covers' bucket exists.")
       setIsSubmitting(false)
     }
   }

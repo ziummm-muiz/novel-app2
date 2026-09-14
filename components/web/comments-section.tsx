@@ -1,33 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { addComment, toggleCommentLike } from "@/app/actions/engagement"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare, Heart, Reply, Loader2 } from "lucide-react"
+import type { CommentWithMeta, CommentNode } from "@/types/engagement"
+import { nestComments } from "@/lib/comments"
 
-type Comment = {
-  id: string
-  target_id: string
-  user_id: string
-  parent_id: string | null
-  comment_text: string
-  created_at: string
-  profiles: { username: string, full_name: string, avatar_url: string }
-  comment_likes: any[]
+interface CommentsSectionProps {
+  targetId: string
+  initialComments: CommentWithMeta[]
+  userId?: string
 }
 
-export default function CommentsSection({ targetId, initialComments, userId }: { targetId: string, initialComments: Comment[], userId?: string }) {
-  const [comments, setComments] = useState<Comment[]>(initialComments)
+export default function CommentsSection({ targetId, initialComments, userId }: CommentsSectionProps) {
+  const [comments, setComments] = useState<CommentWithMeta[]>(initialComments)
   const [mainInput, setMainInput] = useState("")
   const [replyInput, setReplyInput] = useState("")
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
-  
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Organize comments into top-level and replies
-  const topLevelComments = comments.filter(c => !c.parent_id).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-  const getReplies = (parentId: string) => comments.filter(c => c.parent_id === parentId).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  // Assemble comments into a typed nested tree
+  const commentTree = useMemo(() => nestComments(comments), [comments])
 
   const handlePost = async (text: string, parentId: string | null = null) => {
     if (!userId) {
@@ -41,26 +36,27 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
       await addComment(targetId, text, parentId)
       
       // Optimistic update
-      const newComment: Comment = {
+      const newComment: CommentWithMeta = {
         id: `temp-${Date.now()}`,
         target_id: targetId,
         user_id: userId,
         parent_id: parentId,
         comment_text: text,
         created_at: new Date().toISOString(),
-        profiles: { username: "You", full_name: "You", avatar_url: "" },
+        profiles: { id: userId, username: "You", avatar_url: null },
         comment_likes: []
       }
       
-      setComments([newComment, ...comments])
+      setComments(prev => [newComment, ...prev])
       if (parentId) {
         setReplyInput("")
         setReplyingTo(null)
       } else {
         setMainInput("")
       }
-    } catch (err: any) {
-      alert(err.message || "Failed to post comment.")
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to post comment."
+      alert(message)
     } finally {
       setIsSubmitting(false)
     }
@@ -93,39 +89,39 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
 
     try {
       await toggleCommentLike(commentId, isLiked || false)
-    } catch (err: any) {
-      // Revert if error
-      alert(err.message || "Failed to toggle like.")
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to toggle like."
+      alert(message)
     }
   }
 
-  const CommentBubble = ({ comment, isReply = false }: { comment: Comment, isReply?: boolean }) => {
-    const isLiked = userId && comment.comment_likes?.some(like => like.user_id === userId)
-    const likeCount = comment.comment_likes?.length || 0
+  const CommentBubble = ({ node, isReply = false }: { node: CommentNode; isReply?: boolean }) => {
+    const isLiked = Boolean(userId && node.comment_likes?.some(like => like.user_id === userId))
+    const likeCount = node.comment_likes?.length || 0
 
     return (
       <div className={`flex gap-4 ${isReply ? 'mt-4' : 'mt-6'}`}>
         <div className={`shrink-0 ${isReply ? 'size-8' : 'size-10'} bg-muted rounded-full border overflow-hidden flex items-center justify-center font-bold text-muted-foreground`}>
-          {comment.profiles?.avatar_url ? (
-            <img src={comment.profiles.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+          {node.profiles?.avatar_url ? (
+            <img src={node.profiles.avatar_url} alt="avatar" className="w-full h-full object-cover" />
           ) : (
-            (comment.profiles?.username || "?").charAt(0).toUpperCase()
+            (node.profiles?.username || "?").charAt(0).toUpperCase()
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="bg-card border border-border p-4 rounded-2xl shadow-sm">
             <div className="flex justify-between items-start mb-2">
-              <span className="font-semibold text-sm">{comment.profiles?.username || "Unknown"}</span>
+              <span className="font-semibold text-sm">{node.profiles?.username || "Unknown"}</span>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                {new Date(comment.created_at).toLocaleDateString()}
+                {node.created_at ? new Date(node.created_at).toLocaleDateString() : ""}
               </span>
             </div>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{comment.comment_text}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{node.comment_text}</p>
           </div>
           
           <div className="flex items-center gap-4 mt-2 px-2">
             <button 
-              onClick={() => handleLike(comment.id)}
+              onClick={() => handleLike(node.id)}
               className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${isLiked ? 'text-rose-500' : 'text-muted-foreground hover:text-rose-500'}`}
             >
               <Heart className={`size-3.5 ${isLiked ? 'fill-current' : ''}`} />
@@ -134,7 +130,7 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
             
             {!isReply && (
               <button 
-                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                onClick={() => setReplyingTo(replyingTo === node.id ? null : node.id)}
                 className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 <Reply className="size-3.5" />
@@ -144,7 +140,7 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
           </div>
 
           {/* Reply Input Box */}
-          {replyingTo === comment.id && (
+          {replyingTo === node.id && (
             <div className="mt-4 flex gap-3">
               <Textarea 
                 value={replyInput}
@@ -153,17 +149,17 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
                 className="min-h-20 text-sm resize-y bg-background"
                 autoFocus
               />
-              <Button size="sm" onClick={() => handlePost(replyInput, comment.id)} disabled={isSubmitting || !replyInput.trim()}>
+              <Button size="sm" onClick={() => handlePost(replyInput, node.id)} disabled={isSubmitting || !replyInput.trim()}>
                 {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : "Reply"}
               </Button>
             </div>
           )}
 
-          {/* Render nested replies */}
-          {!isReply && (
+          {/* Render nested replies recursively */}
+          {node.children && node.children.length > 0 && (
             <div className="ml-4 border-l-2 border-border/50 pl-4 mt-2">
-              {getReplies(comment.id).map(reply => (
-                <CommentBubble key={reply.id} comment={reply} isReply={true} />
+              {node.children.map(childNode => (
+                <CommentBubble key={childNode.id} node={childNode} isReply={true} />
               ))}
             </div>
           )}
@@ -203,11 +199,11 @@ export default function CommentsSection({ targetId, initialComments, userId }: {
       )}
 
       <div className="pt-4">
-        {topLevelComments.length === 0 ? (
+        {commentTree.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">No comments yet. Start the conversation!</div>
         ) : (
-          topLevelComments.map(comment => (
-            <CommentBubble key={comment.id} comment={comment} />
+          commentTree.map(rootNode => (
+            <CommentBubble key={rootNode.id} node={rootNode} />
           ))
         )}
       </div>

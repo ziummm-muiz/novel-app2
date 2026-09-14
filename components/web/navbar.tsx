@@ -10,6 +10,8 @@ import { BookOpen, Bell, MessageSquare, Menu } from 'lucide-react';
 import SearchBar from './search-bar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+import type { ProfileRow } from "@/types/database.types"
+
 export default function Navbar({ 
   user, 
   profile,
@@ -17,7 +19,7 @@ export default function Navbar({
   unreadNotificationsCount = 0
 }: { 
   user: SupabaseUser | null, 
-  profile?: any,
+  profile?: Partial<ProfileRow> | null,
   unreadMessagesCount?: number,
   unreadNotificationsCount?: number
 }) {
@@ -96,7 +98,7 @@ export default function Navbar({
             <Link href="/chats" className="relative hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Messages">
               <MessageSquare className="size-5" />
               {unreadMessagesCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white border-2 border-background shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white border-2 border-background shadow-sm">
                   {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
                 </span>
               )}
@@ -104,7 +106,7 @@ export default function Navbar({
             <Link href="/notifications" className="relative hover:text-primary transition-colors hover:scale-110 active:scale-95" title="Notifications">
               <Bell className="size-5" />
               {unreadNotificationsCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white border-2 border-background shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white border-2 border-background shadow-sm">
                   {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
                 </span>
               )}

@@ -28,8 +28,8 @@ export default function UserRestrictionToggle({
     setIsLoading(true)
     try {
       await toggleUserRestriction(userId, !isRestricted)
-    } catch (error: any) {
-      alert(error.message || "Failed to update user.")
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : "Failed to update user.")
     } finally {
       setIsLoading(false)
     }

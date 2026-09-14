@@ -22,8 +22,8 @@ export default function LibraryStatusButton({ novelId, initialStatus, userId }: 
       try {
         await updateLibraryStatus(novelId, newStatus)
         setStatus(newStatus)
-      } catch (error: any) {
-        alert(error.message || "Failed to update library.")
+      } catch (error: unknown) {
+        alert(error instanceof Error ? error.message : "Failed to update library.")
       }
     })
   }

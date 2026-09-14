@@ -12,6 +12,19 @@ import { createAdminClient } from '@/lib/supabase/admin'
  * 4. Atomic PostgreSQL fulfillment function (process_paystack_deposit) preventing race conditions
  * 5. Privileged execution strictly through service_role client (no browser exposure)
  */
+interface PaystackEventPayload {
+  event?: string
+  data?: {
+    status?: string
+    reference?: string
+    amount?: number
+    metadata?: {
+      user_id?: string
+      coins?: number
+    }
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const paystackSecret = process.env.PAYSTACK_SECRET_KEY
@@ -47,9 +60,9 @@ export async function POST(req: Request) {
     }
 
     // 4. Parse verified payload
-    let payload: any
+    let payload: PaystackEventPayload
     try {
-      payload = JSON.parse(rawBody)
+      payload = JSON.parse(rawBody) as PaystackEventPayload
     } catch {
       return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 })
     }
@@ -120,7 +133,7 @@ export async function POST(req: Request) {
       { message: 'Payment fulfilled successfully', status: 'success', reference },
       { status: 200 }
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Paystack Webhook] Unhandled exception in webhook handler:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

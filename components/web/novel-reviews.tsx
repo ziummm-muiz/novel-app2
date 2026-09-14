@@ -5,9 +5,16 @@ import { addReview } from "@/app/actions/engagement"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Star, Loader2 } from "lucide-react"
+import type { ReviewWithAuthor } from "@/types/engagement"
 
-export default function NovelReviews({ novelId, initialReviews, userId }: { novelId: string, initialReviews: any[], userId?: string }) {
-  const [reviews, setReviews] = useState(initialReviews)
+interface NovelReviewsProps {
+  novelId: string
+  initialReviews: ReviewWithAuthor[]
+  userId?: string
+}
+
+export default function NovelReviews({ novelId, initialReviews, userId }: NovelReviewsProps) {
+  const [reviews, setReviews] = useState<ReviewWithAuthor[]>(initialReviews)
   const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
   const [reviewText, setReviewText] = useState("")
@@ -33,26 +40,28 @@ export default function NovelReviews({ novelId, initialReviews, userId }: { nove
     try {
       await addReview(novelId, rating, reviewText)
       // Optimistically update
-      const newReview = {
+      const newReview: ReviewWithAuthor = {
         id: `temp-${Date.now()}`,
+        novel_id: novelId,
         user_id: userId,
         rating,
         review_text: reviewText,
         created_at: new Date().toISOString(),
-        profiles: { username: "You", full_name: "You" } // Simple mock for UI
+        profiles: { id: userId, username: "You", avatar_url: null }
       }
       setReviews([newReview, ...reviews])
       setRating(0)
       setReviewText("")
-    } catch (err: any) {
-      setError(err.message || "Failed to post review.")
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to post review."
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const averageRating = reviews.length > 0 
-    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+    ? (reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length).toFixed(1)
     : "0.0"
 
   return (
@@ -138,13 +147,13 @@ export default function NovelReviews({ novelId, initialReviews, userId }: { nove
                   <div>
                     <div className="font-semibold">{review.profiles?.username || "Unknown"}</div>
                     <div className="text-xs text-muted-foreground" suppressHydrationWarning>
-                      {new Date(review.created_at).toLocaleDateString()}
+                      {review.created_at ? new Date(review.created_at).toLocaleDateString() : ""}
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-1 text-primary">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`size-4 ${i < review.rating ? "fill-current" : "text-muted-foreground/30"}`} />
+                    <Star key={i} className={`size-4 ${i < (review.rating || 0) ? "fill-current" : "text-muted-foreground/30"}`} />
                   ))}
                 </div>
               </div>

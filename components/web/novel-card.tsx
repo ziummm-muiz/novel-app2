@@ -24,7 +24,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
 
   return (
     <Link href={`/novel/${novel.id}`} className="group flex flex-col h-full rounded-2xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/5">
-      <div className="w-full aspect-[3/4] bg-muted relative overflow-hidden">
+      <div className="w-full aspect-3/4 bg-muted relative overflow-hidden">
         
         {/* Cover Image */}
         {novel.cover_url ? (
@@ -65,14 +65,14 @@ export default function NovelCard({ novel }: NovelCardProps) {
         </div>
 
         {/* Glassmorphism Hover Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/60 to-transparent h-2/3">
+        <div className="absolute inset-x-0 bottom-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20 flex flex-col justify-end bg-linear-to-t from-black/90 via-black/60 to-transparent h-2/3">
           <p className="text-sm text-gray-300 line-clamp-4 leading-relaxed font-medium drop-shadow-md">
             {novel.synopsis || "No synopsis available. Dive in to discover the story."}
           </p>
         </div>
         
         {/* Subtle persistent gradient for contrast */}
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent z-10 pointer-events-none transition-opacity duration-300 group-hover:opacity-0"></div>
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/40 to-transparent z-10 pointer-events-none transition-opacity duration-300 group-hover:opacity-0"></div>
       </div>
       
       {/* Novel Info Block */}

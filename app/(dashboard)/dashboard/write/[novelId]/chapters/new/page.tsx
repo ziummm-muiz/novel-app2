@@ -26,9 +26,9 @@ export default function NewChapterPage({ params }: { params: Promise<{ novelId: 
       
       await createChapter(formData)
       // Redirect happens in the server action
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || "An unexpected error occurred.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.")
       setIsSubmitting(false)
     }
   }

@@ -323,18 +323,25 @@ Consolidate to one policy per role per action on each table.
 - [x] Chapter numbering uniqueness enforced: `UNIQUE(novel_id, chapter_number)` prevents duplicates
 - [x] Database check constraints added: `amount <> 0`, deposits strictly positive, `wallets.coin_balance >= 0`
 
-### 🟡 Priority 3 — Code Quality
+### 🟢 Priority 3 — Code Quality & Architecture (COMPLETED ✅)
 
-- [ ] Remove all `any` TypeScript types — use `quicktype` extension to generate types from Supabase JSON responses
-- [ ] Type `nestComments` properly: `Comment[]` → `CommentNode[]`
-- [ ] Centralize Supabase queries into a dedicated data access layer
-- [ ] Separate UI / business logic / data access
-- [ ] Add Zod schemas for all form inputs and API payloads
-- [ ] Proper error handling — surface DB errors, don't swallow them
-- [ ] Add loading and error states across async UI
-- [ ] Add tests: wallet operations, chapter ownership, auth flows (`vitest.explorer`)
-- [ ] Remove unused `Geist` font from `layout.tsx`
-- [ ] Remove `vercel.app` fallback from `NEXT_PUBLIC_SITE_URL`
+- [x] Live database types generated from current Supabase schema (`types/database.types.ts`) across all 22 tables
+- [x] Browser, server, and admin Supabase clients strongly typed with `<Database>` generic
+- [x] Domain types separated from raw DB rows (`ReviewWithAuthor`, `CommentWithMeta`, `CommentNode`, `NovelWithAuthor`)
+- [x] Comment tree typed with recursive `CommentNode[]` with documented orphan fallback and stable sibling ordering
+- [x] Unjustified application-level `any` eliminated across the entire codebase (verified with 0 matches in `.ts`/`.tsx`)
+- [x] Zod validation schemas implemented (`lib/validations/`) for novels, chapters, reviews, comments, and profile updates
+- [x] Server Actions refactored to validate input with Zod at the application boundary
+- [x] Authentication and authorization checks verified in Server Actions
+- [x] Reusable database reads centralized into pragmatic DAL modules (`lib/dal/novels.ts`, `chapters.ts`, `profiles.ts`, `engagement.ts`)
+- [x] Components refactored to consume DAL functions and strongly-typed domain data
+- [x] Error handling standardized: typed returns, surfacing Postgres constraint codes (`23505`) and domain errors
+- [x] Unused `Geist` font removed from `app/layout.tsx`
+- [x] Hardcoded `vercel.app` fallback removed; centralized `SITE_URL` config in `lib/constants.ts`
+- [x] Unit tests added for comment tree nesting (`lib/__tests__/comments.test.ts`)
+- [x] Unit tests added for Zod validation schemas (`lib/__tests__/validations.test.ts`)
+- [x] Authorization and business-rule tests added (`lib/__tests__/auth-rules.test.ts`)
+- [x] Vitest configured in `package.json` scripts (`"test": "vitest run"`) and added to devDependencies
 
 ### 🟡 Priority 4 — Product
 

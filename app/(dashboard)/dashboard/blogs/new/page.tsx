@@ -23,8 +23,8 @@ export default function NewBlogPage() {
     try {
       await createBlog(formData)
       // Redirection is handled by the server action
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create blog post")
       setIsLoading(false)
     }
   }

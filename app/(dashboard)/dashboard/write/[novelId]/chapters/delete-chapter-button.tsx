@@ -25,8 +25,8 @@ export function DeleteChapterButton({ novelId, chapterId, chapterTitle, chapterN
             await softDeleteChapter(novelId, chapterId)
             // softDeleteChapter redirects — if it doesn't, refresh
             router.refresh()
-        } catch (err: any) {
-            alert(err.message || "Failed to delete chapter")
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Failed to delete chapter")
             setIsDeleting(false)
         }
     }

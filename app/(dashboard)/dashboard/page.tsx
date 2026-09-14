@@ -6,6 +6,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DeleteNovelButton } from "./delete-novel-button";
 
+interface AdminOverviewNovel {
+  id: string;
+  title: string;
+  cover_url: string | null;
+  genres: string[] | null;
+  created_at: string;
+  profiles: { username: string | null; full_name: string | null } | { username: string | null; full_name: string | null }[] | null;
+  chapters: { id: string; deleted_at: string | null }[] | null;
+}
+
 export default async function DashboardPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -30,6 +40,8 @@ export default async function DashboardPage() {
             `)
             .is("deleted_at", null)
             .order("created_at", { ascending: false });
+
+        const typedAllNovels = (allNovels || []) as unknown as AdminOverviewNovel[];
 
         return (
             <div className="p-6 md:p-8 max-w-7xl mx-auto">
@@ -111,8 +123,8 @@ export default async function DashboardPage() {
       </thead>
 
       <tbody>
-        {allNovels?.length ? (
-          allNovels.map((novel: any) => {
+        {typedAllNovels.length ? (
+          typedAllNovels.map((novel) => {
             const author = Array.isArray(novel.profiles)
               ? novel.profiles[0]
               : novel.profiles;
@@ -166,7 +178,7 @@ export default async function DashboardPage() {
                         className="shrink-0 gap-1.5 -ml-3 px-3"
                     >
                         <Layers className="size-3.5" />
-                        {novel.chapters?.filter((c: any) => !c.deleted_at).length ?? 0} Chapters
+                        {novel.chapters?.filter((c) => !c.deleted_at).length ?? 0} Chapters
                     </Button>
                   </Link>
                 </td>
@@ -305,7 +317,7 @@ export default async function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {novels?.map(novel => (
                         <Card key={novel.id} className="overflow-hidden flex flex-col group hover:border-primary transition-colors">
-                            <div className="aspect-[2/1] relative bg-muted overflow-hidden">
+                            <div className="aspect-2/1 relative bg-muted overflow-hidden">
                                 {novel.cover_url && <img src={novel.cover_url} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Link href={`/dashboard/write/${novel.id}/chapters`}>
@@ -318,7 +330,7 @@ export default async function DashboardPage() {
                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{novel.synopsis}</p>
                             </CardContent>
                             {/* Action footer */}
-                            <div className="px-4 pb-4 pt-0 flex items-center gap-2 border-t border-border mt-auto pt-3">
+                            <div className="px-4 pb-4 flex items-center gap-2 border-t border-border mt-auto pt-3">
                                 <Link href={`/dashboard/write/${novel.id}/settings`} className="flex-1">
                                     <Button variant="outline" size="sm" className="w-full gap-1.5">
                                         <Settings className="size-3.5" />

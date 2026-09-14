@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter, Noto_Sans } from "next/font/google"
+import { Geist_Mono, Inter, Noto_Sans } from "next/font/google"
 import { Suspense } from "react"
 import type { Metadata } from "next"
 
@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner"
 import UrlToastHandler from "@/components/web/url-toast-handler"
+import { SITE_URL } from "@/lib/constants"
 
 const notoSansHeading = Noto_Sans({subsets:['latin'],variable:'--font-heading'});
 
@@ -17,7 +18,7 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://novel-app2.vercel.app/'
+const siteUrl = SITE_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

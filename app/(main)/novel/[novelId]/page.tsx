@@ -57,9 +57,9 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
       .select('status')
       .eq('user_id', user.id)
       .eq('novel_id', novelId)
-      .single()
-    if (lib) libraryStatus = lib.status as any
-  }
+    if (lib && (lib.status === 'reading' || lib.status === 'completed' || lib.status === 'favourite')) {
+      libraryStatus = lib.status
+    }
 
   const authorName = novel.profiles?.username || "Unknown Author";
   

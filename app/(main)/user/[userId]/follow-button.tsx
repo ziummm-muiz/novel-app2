@@ -37,10 +37,10 @@ export function FollowButton({ targetUserId, initialIsFollowing, currentUserId }
 
       try {
         await toggleFollow(targetUserId, `/user/${targetUserId}`)
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Revert optimistic update on failure
         setIsFollowing(previousState)
-        setError(err.message || 'Something went wrong')
+        setError(err instanceof Error ? err.message : 'Something went wrong')
       }
     })
   }

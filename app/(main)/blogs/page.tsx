@@ -4,9 +4,20 @@ import { redirect } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, PenTool, ArrowRight } from "lucide-react"
+import { Tables } from "@/types/database.types"
+
+type BlogRow = Tables<'blogs'>
+
+export interface BlogWithAuthor extends BlogRow {
+  profiles: {
+    username: string | null
+    full_name: string | null
+    avatar_url: string | null
+  } | null
+}
 
 // Helper component to render a list of blogs
-function BlogList({ blogs, emptyTitle, emptyDesc }: { blogs: any[], emptyTitle: string, emptyDesc: string }) {
+function BlogList({ blogs, emptyTitle, emptyDesc }: { blogs: BlogWithAuthor[], emptyTitle: string, emptyDesc: string }) {
   if (!blogs || blogs.length === 0) {
     return (
       <div className="py-24 flex flex-col items-center justify-center text-center bg-card/50 backdrop-blur-sm border border-border rounded-3xl shadow-sm">
@@ -30,7 +41,7 @@ function BlogList({ blogs, emptyTitle, emptyDesc }: { blogs: any[], emptyTitle: 
             <Card className="relative overflow-hidden border-border/50 bg-card hover:bg-card/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 group-hover:border-primary/30">
               
               {/* Subtle accent gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <CardContent className="p-8 relative z-10 flex flex-col sm:flex-row gap-8">
                 
@@ -94,7 +105,7 @@ export default async function BlogsPage() {
     .limit(20)
 
   // 2. Fetch Following Blogs (if logged in)
-  let followingBlogs: any[] = []
+  let followingBlogs: BlogWithAuthor[] = []
   if (user) {
     const { data: follows } = await supabase
       .from("followers")
@@ -114,7 +125,7 @@ export default async function BlogsPage() {
         .order("created_at", { ascending: false })
         .limit(20)
       
-      if (data) followingBlogs = data
+      if (data) followingBlogs = data as unknown as BlogWithAuthor[]
     }
   }
 
@@ -122,9 +133,9 @@ export default async function BlogsPage() {
     <div className="max-w-5xl mx-auto px-6 py-16 animate-in fade-in duration-700 min-h-screen">
       <header className="mb-16 text-center relative">
         <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
-          <div className="w-[600px] h-[200px] bg-primary/10 blur-[100px] rounded-full"></div>
+          <div className="w-150 h-50 bg-primary/10 blur-[100px] rounded-full"></div>
         </div>
-        <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70">
+        <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-transparent bg-clip-text bg-linear-to-b from-foreground to-foreground/70">
           Community Blogs
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">

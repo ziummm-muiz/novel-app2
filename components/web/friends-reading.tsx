@@ -4,6 +4,20 @@ import { User as UserIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 
+interface FriendReadingRecord {
+    id: string
+    novels: {
+        id: string
+        title: string
+        cover_url?: string | null
+    }
+    profiles: {
+        username?: string | null
+        full_name?: string | null
+        avatar_url?: string | null
+    }
+}
+
 export default async function FriendsReading() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -87,9 +101,8 @@ export default async function FriendsReading() {
                 <UserIcon className="text-primary size-6" /> 
                 Friends are reading
             </h2>
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-                {history.map((record: any) => (
+                {(history as unknown as FriendReadingRecord[]).map((record) => (
                     <Link href={`/novel/${record.novels.id}`} key={record.id} className="group block">
                         <Card className="overflow-hidden border-border hover:border-primary hover:shadow-md transition-all duration-200 h-full">
                             <CardContent className="p-0 h-full flex flex-col">

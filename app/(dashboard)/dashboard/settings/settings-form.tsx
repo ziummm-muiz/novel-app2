@@ -7,7 +7,9 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Loader2, CheckCircle2 } from "lucide-react"
 
-export function SettingsForm({ profile, email }: { profile: any, email: string }) {
+import type { ProfileRow } from "@/types/database.types"
+
+export function SettingsForm({ profile, email }: { profile: Partial<ProfileRow> | null, email: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -37,9 +39,9 @@ export function SettingsForm({ profile, email }: { profile: any, email: string }
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || "An unexpected error occurred.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.")
     } finally {
       setIsSubmitting(false)
     }

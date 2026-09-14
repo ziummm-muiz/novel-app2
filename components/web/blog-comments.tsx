@@ -186,7 +186,7 @@ export default function BlogComments({
   currentUserId 
 }: { 
   blogId: string
-  comments: any[]
+  comments: CommentType[]
   currentUserId?: string 
 }) {
   const [newComment, setNewComment] = useState("")

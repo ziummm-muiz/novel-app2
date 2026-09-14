@@ -2,10 +2,24 @@ import Link from "next/link";
 import { Star, BookOpen } from "lucide-react";
 import { Button } from "../ui/button";
 
-export default function CategoryNovelCard({ novel }: { novel: any }) {
+interface CategoryNovelCardProps {
+  novel: {
+    id: string
+    title: string
+    cover_url?: string | null
+    synopsis?: string | null
+    profiles?: {
+      username?: string | null
+      full_name?: string | null
+    } | null
+    reviews?: { rating?: number | null }[] | null
+  }
+}
+
+export default function CategoryNovelCard({ novel }: CategoryNovelCardProps) {
     // Calculate rating locally
     const reviews = novel.reviews || [];
-    const totalRating = reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0);
+    const totalRating = reviews.reduce((sum: number, r) => sum + (r.rating || 0), 0);
     const averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : "0.0";
     
     // Author name fallback

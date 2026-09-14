@@ -4,7 +4,9 @@ import { signout } from "@/app/auth/actions/actions";
 import { User as UserIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
-export default function AuthButton({ user, profile }: { user: SupabaseUser | null, profile?: any }) {
+import type { ProfileRow } from "@/types/database.types";
+
+export default function AuthButton({ user, profile }: { user: SupabaseUser | null, profile?: Partial<ProfileRow> | null }) {
 
     if (user) {
         return (
@@ -18,7 +20,7 @@ export default function AuthButton({ user, profile }: { user: SupabaseUser | nul
                             <UserIcon className="size-4 text-muted-foreground" />
                         )}
                     </div>
-                    <span className="hidden sm:inline-block text-sm font-medium text-foreground pr-1 whitespace-nowrap truncate max-w-[120px]">
+                    <span className="hidden sm:inline-block text-sm font-medium text-foreground pr-1 whitespace-nowrap truncate max-w-30">
                         {profile?.username || user.email?.split('@')[0]}
                     </span>
                 </div>

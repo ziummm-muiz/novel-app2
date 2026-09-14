@@ -10,6 +10,9 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { updateChapter } from "@/app/(dashboard)/dashboard/actions"
 import { DeleteChapterButton } from "../../delete-chapter-button"
+import { Tables } from "@/types/database.types"
+
+type ChapterRow = Tables<'chapters'>
 
 export default function EditChapterPage({ params }: { params: Promise<{ novelId: string, chapterId: string }> }) {
   const [novelId, setNovelId] = useState<string>("")
@@ -17,7 +20,7 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  const [initialChapter, setInitialChapter] = useState<any>(null)
+  const [initialChapter, setInitialChapter] = useState<ChapterRow | null>(null)
   const supabase = createClient()
   const router = useRouter()
 
@@ -71,9 +74,9 @@ export default function EditChapterPage({ params }: { params: Promise<{ novelId:
     try {
       const formData = new FormData(e.currentTarget)
       await updateChapter(novelId, chapterId, formData)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || "An unexpected error occurred.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.")
       setIsSubmitting(false)
     }
   }

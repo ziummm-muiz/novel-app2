@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import type { TablesUpdate } from "@/types/database.types"
 
 export async function createNovel(formData: FormData) {
   const supabase = await createClient()
@@ -148,7 +149,7 @@ export async function updateNovel(novelId: string, formData: FormData) {
   const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
   if (novelError || (novel?.author_id !== user.id && !isAdmin)) throw new Error("Unauthorized")
 
-  let updateData: any = {
+  let updateData: TablesUpdate<'novels'> = {
     title,
     synopsis,
     genres: genresString ? JSON.parse(genresString) : []
@@ -269,7 +270,7 @@ export async function updateProfileSettings(formData: FormData) {
     avatarUrl = publicUrl
   }
 
-  const updateData: any = {
+  const updateData: TablesUpdate<'profiles'> = {
     id: user.id, // Required for upsert
     full_name: fullName,
     username: username

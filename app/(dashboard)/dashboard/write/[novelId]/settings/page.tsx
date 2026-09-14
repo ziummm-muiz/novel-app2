@@ -13,13 +13,16 @@ import { ImagePlus, Loader2, AlertTriangle, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { Tables } from "@/types/database.types"
+
+type NovelRow = Tables<'novels'>
 
 export default function NovelSettingsPage({ params }: { params: Promise<{ novelId: string }> }) {
   const [novelId, setNovelId] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  const [initialNovel, setInitialNovel] = useState<any>(null)
+  const [initialNovel, setInitialNovel] = useState<NovelRow | null>(null)
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const router = useRouter()
@@ -92,9 +95,9 @@ export default function NovelSettingsPage({ params }: { params: Promise<{ novelI
       formData.append("genres", JSON.stringify(selectedGenres))
       
       await updateNovel(novelId, formData)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || "An unexpected error occurred.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.")
       setIsSubmitting(false)
     }
   }

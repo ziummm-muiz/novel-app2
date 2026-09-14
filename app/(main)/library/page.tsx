@@ -5,8 +5,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { BookOpen, CheckCircle, Star, ArrowRight } from "lucide-react"
 
+interface LibraryItemWithNovel {
+  id: string
+  status: string | null
+  novel_id: string | null
+  novels: {
+    id: string
+    title: string
+    cover_url: string | null
+    profiles: {
+      username: string | null
+      full_name: string | null
+    } | null
+  } | null
+}
+
 // Helper component for empty states
-function EmptyState({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function EmptyState({ icon: Icon, title, description }: { icon: React.ComponentType<{ className?: string }>, title: string, description: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-border rounded-2xl bg-muted/20">
       <Icon className="size-12 text-muted-foreground/50 mb-4" />
@@ -50,15 +65,20 @@ export default async function LibraryPage() {
     .select("novel_id, last_chapter_read, last_read_at")
     .eq("user_id", user.id)
 
-  const historyMap = new Map()
-  historyItems?.forEach(h => historyMap.set(h.novel_id, h.last_chapter_read))
+  const historyMap = new Map<string, number>()
+  historyItems?.forEach(h => {
+    if (h.novel_id && typeof h.last_chapter_read === "number") {
+      historyMap.set(h.novel_id, h.last_chapter_read)
+    }
+  })
 
-  const reading = libraryItems?.filter(item => item.status === 'reading') || []
-  const completed = libraryItems?.filter(item => item.status === 'completed') || []
-  const favourites = libraryItems?.filter(item => item.status === 'favourite') || []
+  const typedLibraryItems = (libraryItems || []) as unknown as LibraryItemWithNovel[]
+  const reading = typedLibraryItems.filter(item => item.status === 'reading')
+  const completed = typedLibraryItems.filter(item => item.status === 'completed')
+  const favourites = typedLibraryItems.filter(item => item.status === 'favourite')
 
   // Helper to render novel cards
-  const renderNovels = (items: any[], type: 'reading' | 'completed' | 'favourite') => {
+  const renderNovels = (items: LibraryItemWithNovel[], type: 'reading' | 'completed' | 'favourite') => {
     if (items.length === 0) {
       if (type === 'reading') return <EmptyState icon={BookOpen} title="Nothing here yet" description="Books you are currently reading will appear here." />
       if (type === 'completed') return <EmptyState icon={CheckCircle} title="No completed books" description="Books you finish will be saved here." />

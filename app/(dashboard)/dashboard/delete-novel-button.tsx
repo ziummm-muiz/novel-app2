@@ -23,8 +23,8 @@ export function DeleteNovelButton({ novelId, novelTitle, iconOnly }: DeleteNovel
             await softDeleteNovel(novelId)
             setIsOpen(false)
             router.refresh()
-        } catch (err: any) {
-            alert(err.message || "Failed to delete novel")
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "Failed to delete novel")
             setIsDeleting(false)
         }
     }
