@@ -63,20 +63,13 @@ export async function markAllNotificationsAsRead(currentPath: string) {
   revalidatePath(currentPath)
 }
 
+/**
+ * Notifications are generated automatically by database triggers on the underlying events
+ * (follows, reviews, comments, likes, chapter publications, and account restrictions).
+ * This helper is retained for backward compatibility.
+ */
 export async function createNotification(userId: string, title: string, content: string, link?: string) {
-  const supabase = await createClient()
-
-  // We don't throw error if insertion fails because notifications are non-critical
-  // and we don't want to break the main action (like posting a comment)
-  const { error } = await supabase.from('notifications').insert({
-    user_id: userId,
-    title,
-    content,
-    link
-  })
-
-  if (error) {
-    console.error('Error creating notification:', error)
-  }
+  // Handled automatically by database triggers
+  return
 }
 

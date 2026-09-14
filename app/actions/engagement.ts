@@ -39,16 +39,7 @@ export async function addReview(novelId: string, rating: number, reviewText: str
     throw new Error("Failed to post review.")
   }
 
-  // Notify novel author
-  const { data: novel } = await supabase.from('novels').select('author_id, title').eq('id', novelId).single()
-  if (novel && novel.author_id !== user.id) {
-    await supabase.from('notifications').insert({
-      user_id: novel.author_id,
-      title: 'New Review',
-      content: `Someone left a ${rating}-star review on your novel "${novel.title}".`,
-      link: `/novel/${novelId}`
-    })
-  }
+  // Novel author is notified automatically via database trigger trg_notify_review
 
   revalidatePath(`/novel/${novelId}`)
 }
@@ -78,18 +69,7 @@ export async function addComment(targetId: string, commentText: string, parentId
     throw new Error("Failed to post comment.")
   }
 
-  // Notify parent comment author if it's a reply
-  if (parentId) {
-    const { data: parentComment } = await supabase.from('comments').select('user_id').eq('id', parentId).single()
-    if (parentComment && parentComment.user_id !== user.id) {
-      await supabase.from('notifications').insert({
-        user_id: parentComment.user_id,
-        title: 'New Reply',
-        content: `Someone replied to your comment.`,
-        link: `/novel/${targetId}` // We don't have the exact path, but we assume targetId is mostly novelId for top level
-      })
-    }
-  }
+  // Parent comment author is notified automatically via database trigger trg_notify_comment
 
   return { success: true }
 }
@@ -122,15 +102,7 @@ export async function toggleCommentLike(commentId: string, isCurrentlyLiked: boo
       throw new Error("Failed to like comment.")
     }
 
-    // Notify comment author
-    const { data: comment } = await supabase.from('comments').select('user_id').eq('id', commentId).single()
-    if (comment && comment.user_id !== user.id) {
-      await supabase.from('notifications').insert({
-        user_id: comment.user_id,
-        title: 'New Like',
-        content: `Someone liked your comment.`
-      })
-    }
+    // Comment author is notified automatically via database trigger trg_notify_comment_like
   }
 
   return { success: true }

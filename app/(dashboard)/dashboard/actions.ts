@@ -123,25 +123,7 @@ export async function createChapter(formData: FormData) {
     throw new Error("Failed to save chapter")
   }
 
-  // Notify library readers
-  const { data: readers } = await supabase
-    .from('library')
-    .select('user_id')
-    .eq('novel_id', novelId)
-    .in('status', ['reading', 'favourite'])
-
-  if (readers && readers.length > 0) {
-    // Import createNotification at the top if needed, or just insert directly
-    // Wait, since we are already in an action file and have supabase instance, we can just insert them here
-    const notifications = readers.map(reader => ({
-      user_id: reader.user_id,
-      title: `New Chapter: ${novel?.title || title}`,
-      content: `Chapter ${chapterNumber}: ${title} has been published!`,
-      link: `/novel/${novelId}`
-    }))
-    // We don't block or error on notification failure
-    await supabase.from('notifications').insert(notifications)
-  }
+  // Readers are notified automatically via database trigger trg_notify_chapter_published
 
   revalidatePath(`/dashboard/write/${novelId}/chapters`)
   redirect(`/dashboard/write/${novelId}/chapters`)

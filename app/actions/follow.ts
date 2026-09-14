@@ -50,17 +50,7 @@ export async function toggleFollow(targetUserId: string, currentPath: string) {
       throw new Error('Failed to follow user.')
     }
 
-    // Get follower's username for the notification
-    const { data: followerProfile } = await supabase.from('profiles').select('username').eq('id', user.id).single()
-    const followerName = followerProfile?.username || 'Someone'
-
-    // Notify target user
-    await supabase.from('notifications').insert({
-      user_id: targetUserId,
-      title: 'New Follower',
-      content: `${followerName} started following you!`,
-      link: `/user/${user.id}`
-    })
+    // Target user is notified automatically via database trigger trg_notify_follow
   }
 
   // Revalidate the path so the UI updates

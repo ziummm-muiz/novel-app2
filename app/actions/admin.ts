@@ -35,13 +35,6 @@ export async function toggleUserRestriction(userId: string, isRestricted: boolea
     throw new Error("Failed to update user restriction status.")
   }
 
-  // Notify the user
-  const statusMessage = isRestricted ? 'restricted' : 'unrestricted'
-  await supabase.from('notifications').insert({
-    user_id: userId,
-    title: 'Account Status Update',
-    content: `Your account has been ${statusMessage} by an administrator.`
-  })
-
+  // User is notified automatically via database trigger trg_notify_profile_restriction
   revalidatePath("/dashboard/users")
 }
