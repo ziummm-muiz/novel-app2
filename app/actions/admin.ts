@@ -13,14 +13,9 @@ export async function toggleUserRestriction(userId: string, isRestricted: boolea
     throw new Error("You must be logged in to perform this action.")
   }
 
-  // 2. Check if current user is admin
-  const { data: currentProfile, error: profileError } = await supabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .single()
-
-  if (profileError || !currentProfile?.is_admin) {
+  // 2. Check if current user is admin via JWT claim (decoupled from profiles table lookup)
+  const isAdmin = user.app_metadata?.is_admin === true
+  if (!isAdmin) {
     throw new Error("Unauthorized: Only admins can manage users.")
   }
 

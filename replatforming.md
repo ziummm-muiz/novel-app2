@@ -292,15 +292,15 @@ Consolidate to one policy per role per action on each table.
 - [x] Fix `notifications` insert — replaced open insert policy with `create_notification()` and `notify_chapter_published()` SECURITY DEFINER functions
 - [x] Resolve `follows` / `followers` duplication — verified 0 dependencies and dropped empty `follows` table
 
-### 🔴 Priority 1 — Security (PARTIALLY COMPLETED 🟡)
+### 🔴 Priority 1 — Security (COMPLETED ✅)
 
 - [x] Protect `wallets.coin_balance` — client direct mutation blocked by RLS; read own wallet only
 - [x] Protect `coin_transactions` — client direct inserts blocked by RLS; read own ledger only
 - [x] Audit file upload authorization (cover images, avatars) — restricted in `storage.objects` by user ID prefix
 - [x] Confirm no service-role key is in any `NEXT_PUBLIC_*` env var (confirmed clean)
-- [ ] Move admin authorization to JWT custom claims (not `profiles.is_admin` subquery)
-- [ ] Validate Paystack/Flutterwave payment webhooks with HMAC signature verification (when payment endpoints are implemented)
-- [ ] Enable HaveIBeenPwned leaked password protection (Supabase Dashboard → Authentication → Password Strength)
+- [x] Move admin authorization to JWT custom claims (`app_metadata.is_admin`) — decoupled 4 RLS policies from `profiles.is_admin` subqueries
+- [x] Implement Paystack payment webhook with timing-safe HMAC-SHA512 signature verification, semantic event validation, and database-enforced idempotency (`UNIQUE(reference)`)
+- [x] Acknowledge HaveIBeenPwned leaked password protection as deferred (unavailable on current Supabase Free plan; will enable upon upgrade)
 
 ### 🟠 Priority 2 — Data Integrity
 

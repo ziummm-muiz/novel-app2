@@ -12,13 +12,7 @@ export default async function DashboardPage() {
 
     if (!user) redirect("/auth");
 
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("id", user.id)
-        .single();
-
-    const isAdmin = profile?.is_admin || false;
+    const isAdmin = user.app_metadata?.is_admin === true;
 
     if (isAdmin) {
         // --- ADMIN DASHBOARD ---

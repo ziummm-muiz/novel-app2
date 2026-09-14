@@ -134,7 +134,8 @@ export async function updateNovel(novelId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("You must be logged in")
     
-  const { data: profile } = await supabase.from('profiles').select('is_restricted, is_admin').eq('id', user.id).single()
+  const isAdmin = user.app_metadata?.is_admin === true
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
   if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
 
   const title = formData.get("title") as string
@@ -145,7 +146,7 @@ export async function updateNovel(novelId: string, formData: FormData) {
   if (!title || !synopsis) throw new Error("Missing required fields")
 
   const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
-  if (novelError || (novel?.author_id !== user.id && !profile?.is_admin)) throw new Error("Unauthorized")
+  if (novelError || (novel?.author_id !== user.id && !isAdmin)) throw new Error("Unauthorized")
 
   let updateData: any = {
     title,
@@ -177,9 +178,9 @@ export async function softDeleteNovel(novelId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("You must be logged in")
 
-  const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single()
+  const isAdmin = user.app_metadata?.is_admin === true
   const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
-  if (novelError || (novel?.author_id !== user.id && !profile?.is_admin)) throw new Error("Unauthorized")
+  if (novelError || (novel?.author_id !== user.id && !isAdmin)) throw new Error("Unauthorized")
 
   const { error } = await supabase.from('novels').update({ deleted_at: new Date().toISOString() }).eq('id', novelId)
   if (error) throw new Error("Failed to delete novel")
@@ -192,7 +193,8 @@ export async function updateChapter(novelId: string, chapterId: string, formData
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("You must be logged in")
 
-  const { data: profile } = await supabase.from('profiles').select('is_restricted, is_admin').eq('id', user.id).single()
+  const isAdmin = user.app_metadata?.is_admin === true
+  const { data: profile } = await supabase.from('profiles').select('is_restricted').eq('id', user.id).single()
   if (profile?.is_restricted) throw new Error("Your account is restricted from posting.")
 
   const title = formData.get("title") as string
@@ -202,7 +204,7 @@ export async function updateChapter(novelId: string, chapterId: string, formData
   if (!title || !chapterNumberStr || !content) throw new Error("Missing required fields")
 
   const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
-  if (novelError || (novel?.author_id !== user.id && !profile?.is_admin)) throw new Error("Unauthorized")
+  if (novelError || (novel?.author_id !== user.id && !isAdmin)) throw new Error("Unauthorized")
 
   const { error } = await supabase.from('chapters').update({
     title,
@@ -223,9 +225,9 @@ export async function softDeleteChapter(novelId: string, chapterId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("You must be logged in")
 
-  const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single()
+  const isAdmin = user.app_metadata?.is_admin === true
   const { data: novel, error: novelError } = await supabase.from('novels').select('author_id').eq('id', novelId).single()
-  if (novelError || (novel?.author_id !== user.id && !profile?.is_admin)) throw new Error("Unauthorized")
+  if (novelError || (novel?.author_id !== user.id && !isAdmin)) throw new Error("Unauthorized")
 
   const { error } = await supabase.from('chapters').update({ deleted_at: new Date().toISOString() }).eq('id', chapterId)
   if (error) throw new Error("Failed to delete chapter")

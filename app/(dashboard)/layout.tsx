@@ -12,14 +12,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         redirect("/auth");
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin, username")
-        .eq("id", user.id)
-        .single();
-
-    const isAdmin = profile?.is_admin || false;
+    // Check if user is admin via JWT claim
+    const isAdmin = user.app_metadata?.is_admin === true;
 
     return (
         <div className="flex min-h-screen bg-background">
