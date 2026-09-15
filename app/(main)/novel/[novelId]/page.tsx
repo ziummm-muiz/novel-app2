@@ -166,12 +166,13 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
   if (novel.created_at) {
     bookJsonLd.datePublished = novel.created_at;
   }
-  if (reviews && reviews.length > 0) {
-    const avg = (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1);
+  const ratedReviews = (reviews ?? []).filter((r) => r.rating !== null);
+  if (ratedReviews.length > 0) {
+    const avg = (ratedReviews.reduce((acc, r) => acc + r.rating!, 0) / ratedReviews.length).toFixed(1);
     bookJsonLd.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: avg,
-      reviewCount: reviews.length,
+      reviewCount: ratedReviews.length,
       bestRating: "5",
       worstRating: "1",
     };
