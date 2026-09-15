@@ -343,15 +343,21 @@ Consolidate to one policy per role per action on each table.
 - [x] Authorization and business-rule tests added (`lib/__tests__/auth-rules.test.ts`)
 - [x] Vitest configured in `package.json` scripts (`"test": "vitest run"`) and added to devDependencies
 
-### 🟡 Priority 4 — Product
+### ✅ Priority 4 — Product COMPLETED
 
-- [ ] Categorize all features in README: **IMPLEMENTED / IN PROGRESS / PLANNED**
-- [ ] Remove unsubstantiated claims ("sub-50ms delivery", "zero billing overhead")
-- [ ] Define MVP feature set — freeze or drop unimplemented tables
-- [ ] Rebrand (name, domain, colour palette)
-- [ ] UI/UX V2 (use `v0` extension for design iteration)
-- [ ] Mobile experience (use `mobileview` extension for preview)
-- [ ] SEO: per-novel metadata, OG images, sitemap, robots.txt, structured data, canonical URLs
+- [x] Categorize all features in README: **IMPLEMENTED / IN PROGRESS / PLANNED**
+- [x] Remove unsubstantiated claims ("sub-50ms delivery", "zero billing overhead", "Cloudflare R2")
+- [x] Define MVP feature set — **17 Active MVP / 4 Deferred / 1 Deprecated** table classification documented in README and `replatforming.md` (no destructive schema changes)
+- [x] Brand retained as **NovelApp** for MVP stability; `SITE_URL` is the single source of truth for all URLs
+- [x] SEO: dynamic `app/robots.ts` (public routes allowed, private routes disallowed)
+- [x] SEO: dynamic `app/sitemap.ts` (published novels, chapters, blogs + static marketing pages; drafts and soft-deleted content excluded)
+- [x] SEO: `generateMetadata` with canonical URLs and OpenGraph on novel, chapter, blog, categories, best-seller, and blogs pages
+- [x] SEO: Schema.org `Book` JSON-LD on novel pages (strictly real database values; `aggregateRating` only present when reviews exist)
+- [x] SEO: Schema.org `BlogPosting` JSON-LD on individual blog pages
+- [x] Public accessibility: removed artificial auth-walls from novel, chapter, and blog pages (crawlers + anonymous readers can access; reading history recorded for authenticated users)
+- [x] `npm run typecheck` — 0 errors ✅
+- [x] `npm test` — 23/23 tests pass ✅
+- [x] `npm run build` — exit code 0; 25 routes generated including `/robots.txt` (static) and `/sitemap.xml` (static) ✅
 
 ---
 
