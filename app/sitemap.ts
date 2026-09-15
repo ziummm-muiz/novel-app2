@@ -41,12 +41,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
-    // 1. Published, non-deleted novels
+    // 1. Explicitly published, non-deleted novels only.
+    // Using .eq('published') rather than .neq('draft') to exclude 'scheduled'
+    // content that has not yet gone live.
     const { data: novels } = await supabase
       .from('novels')
       .select('id, created_at, status')
       .is('deleted_at', null)
-      .neq('status', 'draft')
+      .eq('status', 'published')
 
     const novelRoutes: MetadataRoute.Sitemap = (novels || []).map((novel) => ({
       url: `${SITE_URL}/novel/${novel.id}`,
@@ -55,13 +57,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }))
 
-    // 2. Published, non-deleted chapters belonging to published novels
+    // 2. Explicitly published, non-deleted chapters; then cross-filtered to
+    // only chapters belonging to published novels (belt-and-suspenders).
     const publishedNovelIds = new Set((novels || []).map((n) => n.id))
     const { data: chapters } = await supabase
       .from('chapters')
       .select('novel_id, chapter_number, created_at, published_at, status')
       .is('deleted_at', null)
-      .neq('status', 'draft')
+      .eq('status', 'published')
 
     const chapterRoutes: MetadataRoute.Sitemap = (chapters || [])
       .filter((ch) => publishedNovelIds.has(ch.novel_id))
@@ -76,7 +79,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       }))
 
-    // 3. Published blogs
+    // 3. All blogs.
+    // The blogs table has no status or deleted_at column in the live schema
+    // (confirmed from database.types.ts: id, title, content, author_id, created_at only).
+    // Every inserted blog row is intentionally public — no status filter needed.
     const { data: blogs } = await supabase
       .from('blogs')
       .select('id, created_at')
