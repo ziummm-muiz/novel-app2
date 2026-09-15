@@ -348,7 +348,7 @@ Consolidate to one policy per role per action on each table.
 - [x] Categorize all features in README: **IMPLEMENTED / IN PROGRESS / PLANNED**
 - [x] Remove unsubstantiated claims ("sub-50ms delivery", "zero billing overhead", "Cloudflare R2")
 - [x] Define MVP feature set — **17 Active MVP / 4 Deferred / 1 Deprecated** table classification documented in README and `replatforming.md` (no destructive schema changes)
-- [x] Brand retained as **NovelApp** for MVP stability; `SITE_URL` is the single source of truth for all URLs
+- [x] Rebranded to **Mi Novaria**; `SITE_URL` is the single source of truth for all URLs
 - [x] SEO: dynamic `app/robots.ts` (public routes allowed, private routes disallowed)
 - [x] SEO: dynamic `app/sitemap.ts` (published novels, chapters, blogs + static marketing pages; drafts and soft-deleted content excluded)
 - [x] SEO: `generateMetadata` with canonical URLs and OpenGraph on novel, chapter, blog, categories, best-seller, and blogs pages
@@ -550,7 +550,7 @@ Two separate extension environments exist: **Antigravity IDE** (the environment 
    * **Crawler Directives**: Dynamic `app/robots.ts` granting public access and explicitly disallowing private dashboard, chat, auth, and user utility routes.
    * **Strict Schema.org Structured Data**: Dynamic `Book` and `BlogPosting` JSON-LD generated using only real database values (no fabricated ratings, authors, or dates).
 5. **Brand & Visual Stability**:
-   * Retain **NovelApp** branding and current dark slate / primary color theme for MVP stability before AWS deployment.
+   * Rebranded to **Mi Novaria**; retaining current dark slate / primary color theme for MVP stability before AWS deployment.
 
 *Priority 4 Verification Checklist:*
 - [ ] Automated Typecheck: `npm run typecheck` passes with zero errors

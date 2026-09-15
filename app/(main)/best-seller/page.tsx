@@ -4,13 +4,13 @@ import { SITE_URL } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: "Best Sellers",
-  description: "Discover the most popular and top-rated serialized novels on NovelApp.",
+  description: "Discover the most popular and top-rated stories on Mi Novaria.",
   alternates: {
     canonical: `${SITE_URL}/best-seller`,
   },
   openGraph: {
-    title: "Best Sellers | NovelApp",
-    description: "Discover the most popular and top-rated serialized novels on NovelApp.",
+    title: "Best Sellers | Mi Novaria",
+    description: "Discover the most popular and top-rated stories on Mi Novaria.",
     url: `${SITE_URL}/best-seller`,
   },
 }

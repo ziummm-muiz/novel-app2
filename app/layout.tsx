@@ -23,25 +23,25 @@ const siteUrl = SITE_URL
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'NovelApp | Discover & Write Amazing Novels',
-    template: '%s | NovelApp'
+    default: 'Mi Novaria | Discover, read, and share stories',
+    template: '%s | Mi Novaria'
   },
-  description: 'A premium platform to discover, read, and write amazing novels. Join our community of readers and writers today.',
+  description: 'Discover, read, and share stories on Mi Novaria.',
   keywords: ['novel', 'reading', 'writing', 'books', 'stories', 'fiction', 'community'],
-  authors: [{ name: 'NovelApp Team' }],
-  creator: 'NovelApp',
+  authors: [{ name: 'Mi Novaria Team' }],
+  creator: 'Mi Novaria',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
-    title: 'NovelApp | Discover & Write Amazing Novels',
-    description: 'A premium platform to discover, read, and write amazing novels.',
-    siteName: 'NovelApp',
+    title: 'Mi Novaria | Discover, read, and share stories',
+    description: 'Discover, read, and share stories on Mi Novaria.',
+    siteName: 'Mi Novaria',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NovelApp | Discover & Write Amazing Novels',
-    description: 'A premium platform to discover, read, and write amazing novels.',
+    title: 'Mi Novaria | Discover, read, and share stories',
+    description: 'Discover, read, and share stories on Mi Novaria.',
   },
 }
 

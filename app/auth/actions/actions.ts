@@ -56,7 +56,7 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/?message=Successfully signed up! Welcome to NovelApp.')
+  redirect('/?message=Successfully signed up! Welcome to Mi Novaria.')
 }
 
 export async function signout() {

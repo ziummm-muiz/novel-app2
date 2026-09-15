@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ blogId: s
   const authorName = author?.full_name || author?.username || "Unknown Author"
   const description = blog.content
     ? blog.content.replace(/[#*`_]/g, '').slice(0, 160)
-    : `Read ${blog.title} on NovelApp`
+    : `Read ${blog.title} on Mi Novaria`
   const canonicalUrl = `${SITE_URL}/blogs/${blogId}`
 
   return {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ blogId: s
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${blog.title} | NovelApp`,
+      title: `${blog.title} | Mi Novaria`,
       description,
       url: canonicalUrl,
       type: "article",
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ blogId: s
     },
     twitter: {
       card: "summary",
-      title: `${blog.title} | NovelApp`,
+      title: `${blog.title} | Mi Novaria`,
       description,
     },
   }

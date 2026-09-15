@@ -11,7 +11,7 @@ export default function GlobalLoading() {
           </div>
         </div>
         <div className="space-y-2 text-center">
-          <h2 className="text-xl font-black tracking-tight animate-pulse text-foreground">NovelApp<span className="text-primary">.</span></h2>
+          <h2 className="text-xl font-black tracking-tight animate-pulse text-foreground">Mi Novaria<span className="text-primary">.</span></h2>
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground animate-pulse">Loading Experience</p>
         </div>
       </div>

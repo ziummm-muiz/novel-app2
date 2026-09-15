@@ -165,7 +165,7 @@ export default async function DashboardPage() {
                 {/* Author */}
                 <td className="px-5 py-4">
                   <span className="block truncate text-sm text-muted-foreground">
-                    {author?.username || author?.full_name || "Unknown"}
+                    {author?.username || "Unknown"}
                   </span>
                 </td>
 

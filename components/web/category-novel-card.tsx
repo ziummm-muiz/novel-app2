@@ -23,7 +23,7 @@ export default function CategoryNovelCard({ novel }: CategoryNovelCardProps) {
     const averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : "0.0";
     
     // Author name fallback
-    const authorName = novel.profiles?.full_name || novel.profiles?.username || "Unknown Author";
+    const authorName = novel.profiles?.username || "Unknown Author";
 
     return (
         <div className="flex bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all h-48 w-full group">

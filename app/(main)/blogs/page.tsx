@@ -19,13 +19,13 @@ export interface BlogWithAuthor extends BlogRow {
 
 export const metadata: Metadata = {
   title: "Community Blogs",
-  description: "Read the latest updates, stories, and announcements directly from your favorite authors on NovelApp.",
+  description: "Discover, read, and share stories on Mi Novaria — community blogs from your favourite authors.",
   alternates: {
     canonical: `${SITE_URL}/blogs`,
   },
   openGraph: {
-    title: "Community Blogs | NovelApp",
-    description: "Read the latest updates, stories, and announcements directly from your favorite authors on NovelApp.",
+    title: "Community Blogs | Mi Novaria",
+    description: "Discover, read, and share stories on Mi Novaria — community blogs from your favourite authors.",
     url: `${SITE_URL}/blogs`,
   },
 }

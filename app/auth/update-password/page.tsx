@@ -24,7 +24,7 @@ export default async function UpdatePasswordPage({ searchParams }: { searchParam
         
         <div className="relative z-10 flex items-center gap-2 font-bold text-3xl text-white tracking-tight">
           <BookOpen className="text-primary size-8 shrink-0" />
-          <span>NovelApp<span className="text-primary">.</span></span>
+          <span>Mi Novaria<span className="text-primary">.</span></span>
         </div>
         
         <div className="relative z-10 max-w-xl mb-10">
@@ -42,7 +42,7 @@ export default async function UpdatePasswordPage({ searchParams }: { searchParam
         <div className="w-full max-w-md flex flex-col gap-8">
           <div className="flex lg:hidden items-center gap-2 font-bold text-3xl tracking-tight mb-2">
             <BookOpen className="text-primary size-8 shrink-0" />
-            <span>NovelApp<span className="text-primary">.</span></span>
+            <span>Mi Novaria<span className="text-primary">.</span></span>
           </div>
 
           <div className="flex flex-col gap-2">

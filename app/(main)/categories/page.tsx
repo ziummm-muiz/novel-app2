@@ -7,13 +7,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Explore Categories",
-    description: "Dive into our vast library of stories spanning across fantasy, romance, sci-fi, action, mystery, and more on NovelApp.",
+    description: "Discover, read, and share stories on Mi Novaria across fantasy, romance, sci-fi, action, mystery, and more.",
     alternates: {
         canonical: `${SITE_URL}/categories`,
     },
     openGraph: {
-        title: "Explore Categories | NovelApp",
-        description: "Dive into our vast library of stories spanning across multiple genres on NovelApp.",
+        title: "Explore Categories | Mi Novaria",
+        description: "Discover, read, and share stories on Mi Novaria across multiple genres.",
         url: `${SITE_URL}/categories`,
     },
 };

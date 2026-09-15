@@ -64,7 +64,7 @@ export default function SignUpPage() {
         <div className="w-full max-w-md flex flex-col gap-6">
           <div className="flex lg:hidden items-center gap-2 font-bold text-3xl tracking-tight mb-2">
             <BookOpen className="text-primary size-8 shrink-0" />
-            <span>NovelApp<span className="text-primary">.</span></span>
+            <span>Mi Novaria<span className="text-primary">.</span></span>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -276,7 +276,7 @@ export default function SignUpPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-zinc-950/20 z-0"></div>
         
         <div className="relative z-10 flex items-center gap-2 font-bold text-3xl text-white tracking-tight justify-end">
-          <span>NovelApp<span className="text-primary">.</span></span>
+          <span>Mi Novaria<span className="text-primary">.</span></span>
           <BookOpen className="text-primary size-8 shrink-0" />
         </div>
         

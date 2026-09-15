@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ novelId: 
   const author = Array.isArray(novel.profiles) ? novel.profiles[0] : novel.profiles;
   const authorName = author?.full_name || author?.username || "Unknown Author";
   const title = `${novel.title} by ${authorName}`;
-  const description = novel.synopsis ? novel.synopsis.slice(0, 160) : `Read ${novel.title} on NovelApp`;
+  const description = novel.synopsis ? novel.synopsis.slice(0, 160) : `Read ${novel.title} on Mi Novaria`;
   const canonicalUrl = `${SITE_URL}/novel/${novelId}`;
 
   return {
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ novelId: 
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${novel.title} | NovelApp`,
+      title: `${novel.title} | Mi Novaria`,
       description,
       url: canonicalUrl,
       type: "book",
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: { params: Promise<{ novelId: 
     },
     twitter: {
       card: "summary_large_image",
-      title: `${novel.title} | NovelApp`,
+      title: `${novel.title} | Mi Novaria`,
       description,
       images: novel.cover_url ? [novel.cover_url] : [],
     },

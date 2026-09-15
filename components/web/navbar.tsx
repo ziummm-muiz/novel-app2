@@ -63,7 +63,7 @@ export default function Navbar({
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
             <BookOpen className="text-primary size-5 md:size-6 shrink-0" />
-            <span className="hidden sm:inline-block">NovelApp<span className="text-primary">.</span></span>
+            <span className="hidden sm:inline-block">Mi Novaria<span className="text-primary">.</span></span>
         </Link>
 
         {/* Desktop Nav Links */}

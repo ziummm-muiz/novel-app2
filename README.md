@@ -1,6 +1,6 @@
-# NovelApp
+# Mi Novaria
 
-NovelApp is a modern serialized web novel and reader-author community platform built with Next.js (App Router), TypeScript, and PostgreSQL.
+Mi Novaria is a modern serialized web novel and reader-author community platform built with Next.js (App Router), TypeScript, and PostgreSQL.
 
 The application has been hardened through a rigorous security, data integrity, and architectural audit in preparation for cloud deployment to AWS.
 

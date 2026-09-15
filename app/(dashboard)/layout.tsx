@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <div className="p-6">
                     <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
                         <BookOpen className="text-primary size-6" />
-                        <span>NovelApp<span className="text-primary">.</span></span>
+                        <span>Mi Novaria<span className="text-primary">.</span></span>
                     </Link>
                 </div>
                 
@@ -72,7 +72,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <div className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card sticky top-0 z-50">
                     <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight">
                         <BookOpen className="text-primary size-5" />
-                        <span>NovelApp<span className="text-primary">.</span></span>
+                        <span>Mi Novaria<span className="text-primary">.</span></span>
                     </Link>
                     <DropdownMenu>
                         <DropdownMenuTrigger className="p-2 -mr-2 rounded-md hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">

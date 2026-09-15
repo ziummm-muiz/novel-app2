@@ -35,13 +35,13 @@ export async function generateMetadata({ params }: { params: Promise<{ novelId: 
 
   return {
     title: pageTitle,
-    description: `Read ${chapterTitle} of ${novelTitle} on NovelApp.`,
+    description: `Read ${chapterTitle} of ${novelTitle} on Mi Novaria.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${pageTitle} | NovelApp`,
-      description: `Read ${chapterTitle} of ${novelTitle} on NovelApp.`,
+      title: `${pageTitle} | Mi Novaria`,
+      description: `Read ${chapterTitle} of ${novelTitle} on Mi Novaria.`,
       url: canonicalUrl,
     },
   };
