@@ -1,21 +1,69 @@
 import { createClient } from "@/lib/supabase/server"
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import Link from "next/link"
+import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, User, MessageCircle } from "lucide-react"
 import ReactMarkdown from 'react-markdown'
 import BlogLikeButton from "@/components/web/blog-like-button"
 import BlogComments, { type CommentType } from "@/components/web/blog-comments"
+import { SITE_URL } from "@/lib/constants"
+
+export async function generateMetadata({ params }: { params: Promise<{ blogId: string }> }): Promise<Metadata> {
+  const { blogId } = await params
+  const supabase = await createClient()
+
+  const { data: blog } = await supabase
+    .from("blogs")
+    .select(`
+      title,
+      content,
+      created_at,
+      profiles:author_id(username, full_name)
+    `)
+    .eq("id", blogId)
+    .single()
+
+  if (!blog) {
+    return {
+      title: "Blog Post Not Found",
+    }
+  }
+
+  const author = Array.isArray(blog.profiles) ? blog.profiles[0] : blog.profiles
+  const authorName = author?.full_name || author?.username || "Unknown Author"
+  const description = blog.content
+    ? blog.content.replace(/[#*`_]/g, '').slice(0, 160)
+    : `Read ${blog.title} on NovelApp`
+  const canonicalUrl = `${SITE_URL}/blogs/${blogId}`
+
+  return {
+    title: blog.title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${blog.title} | NovelApp`,
+      description,
+      url: canonicalUrl,
+      type: "article",
+      publishedTime: blog.created_at,
+      authors: [authorName],
+    },
+    twitter: {
+      card: "summary",
+      title: `${blog.title} | NovelApp`,
+      description,
+    },
+  }
+}
 
 export default async function IndividualBlogPage({ params }: { params: Promise<{ blogId: string }> }) {
   const { blogId } = await params
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/auth/login')
-  }
 
   const { data: blog, error } = await supabase
     .from("blogs")
@@ -58,8 +106,33 @@ export default async function IndividualBlogPage({ params }: { params: Promise<{
     .eq('blog_id', blogId)
     .order('created_at', { ascending: true })
 
+  // Schema.org BlogPosting JSON-LD structured data strictly from database values
+  const blogJsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    url: `${SITE_URL}/blogs/${blog.id}`,
+    datePublished: blog.created_at,
+  }
+
+  if (authorName && authorName !== "Unknown Author") {
+    blogJsonLd.author = {
+      "@type": "Person",
+      name: authorName,
+    }
+  }
+
+  if (blog.content) {
+    blogJsonLd.articleBody = blog.content
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 min-h-screen flex flex-col animate-in fade-in duration-500">
+      {/* Schema.org BlogPosting JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+      />
       
       {/* Top Navigation */}
       <div className="flex items-center justify-between border-b border-border pb-6 mb-10">

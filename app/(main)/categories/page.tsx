@@ -1,8 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
-import { APP_GENRES } from "@/lib/constants";
+import { APP_GENRES, SITE_URL } from "@/lib/constants";
 import CategoryNovelCard from "@/components/web/category-novel-card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Explore Categories",
+    description: "Dive into our vast library of stories spanning across fantasy, romance, sci-fi, action, mystery, and more on NovelApp.",
+    alternates: {
+        canonical: `${SITE_URL}/categories`,
+    },
+    openGraph: {
+        title: "Explore Categories | NovelApp",
+        description: "Dive into our vast library of stories spanning across multiple genres on NovelApp.",
+        url: `${SITE_URL}/categories`,
+    },
+};
 
 async function getTopNovelsForCategory(genre: string) {
     const supabase = await createClient();

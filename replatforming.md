@@ -525,11 +525,32 @@ Two separate extension environments exist: **Antigravity IDE** (the environment 
 5. Remove all `any` TypeScript (use `quicktype`)
 6. Centralize Supabase queries
 
-### Step 3: Product Definition (Weeks 3–4)
-1. Define final MVP — freeze or drop unimplemented tables
-2. Update README: IMPLEMENTED / IN PROGRESS / PLANNED
-3. Remove unsubstantiated performance claims
-4. Rebrand — name, domain, UI V2
+### Step 3: Product Definition (Weeks 3–4) — Priority 4 [IN PROGRESS]
+
+1. **Database Schema & Table Strategy**:
+   * **17 Active MVP Tables**: `profiles`, `novels`, `chapters`, `reviews`, `comments`, `comment_likes`, `user_library`, `reading_history`, `messages`, `wallets`, `coin_transactions`, `followers`, `blogs`, `blog_likes`, `blog_comments`, `blog_comment_likes`, `notifications`. Fully supported by 26 FK covering indexes, RLS policies, Zod validation, and DAL queries.
+   * **4 Deferred / Frozen Tables**: `posts`, `polls`, `poll_votes`, `reading_time_logs`. Retained in PostgreSQL schema; active UI and writing workflows deferred to post-MVP releases to maintain strict project scope.
+   * **1 Deprecated Table**: `follows`. Superseded by canonical `followers` table.
+2. **Authoritative Implementation Baseline**:
+   * **Financial Integrity**: Cryptographic Paystack HMAC-SHA512 webhook verification, atomic idempotent coin deposit RPC (`process_paystack_deposit`), wallet balance check (`wallets.coin_balance >= 0`), and non-zero transaction amounts.
+   * **Security & Auth**: Custom JWT administrative claims (`app_metadata.is_admin`) without recurring DB lookups; non-overlapping RLS policies with `(SELECT auth.uid())` InitPlan optimizations; column-level trigger preventing self-escalation.
+   * **Code Quality**: Live-generated Supabase types (`types/database.types.ts`), zero unjustified `any` types across the codebase, runtime Zod boundary validation, and pragmatic Data Access Layer (`lib/dal/`).
+3. **Messaging Architecture Distinction**:
+   * **Implemented MVP**: Direct user-to-user messaging data model and conversation threading (`messages`).
+   * **Planned Roadmap**: Real-time Supabase broadcast channels with live user typing indicators and presence.
+4. **Comprehensive Dynamic SEO**:
+   * **Single Source of Truth**: Centralized `SITE_URL` (`lib/constants.ts`) for canonical URLs, sitemap URLs, OpenGraph URLs, and metadata.
+   * **Public-Only Indexing**: Dynamic `app/sitemap.ts` indexing only published novels (`deleted_at IS NULL`, non-draft), published chapters, published blogs, and public marketing pages (`/`, `/categories`, `/blogs`, `/best-seller`). Strictly excludes drafts, deleted content, `/dashboard/*`, `/chats/*`, `/auth/*`, `/coins`, `/library`, `/notifications`, and `/settings`.
+   * **Crawler Directives**: Dynamic `app/robots.ts` granting public access and explicitly disallowing private dashboard, chat, auth, and user utility routes.
+   * **Strict Schema.org Structured Data**: Dynamic `Book` and `BlogPosting` JSON-LD generated using only real database values (no fabricated ratings, authors, or dates).
+5. **Brand & Visual Stability**:
+   * Retain **NovelApp** branding and current dark slate / primary color theme for MVP stability before AWS deployment.
+
+*Priority 4 Verification Checklist:*
+- [ ] Automated Typecheck: `npm run typecheck` passes with zero errors
+- [ ] Unit & Business Rules Test Suite: `npm test` passes all tests
+- [ ] Production Build: `npm run build` succeeds, generating all routes including `/robots.txt` and `/sitemap.xml`
+- [ ] Dynamic SEO Validation: Verify robots directives, sitemap XML output, canonical tags, OpenGraph metadata, and Schema.org JSON-LD
 
 ### Step 4: AWS Infrastructure (Weeks 4–6)
 1. Create IAM deployment role with least-privilege permissions
@@ -571,32 +592,32 @@ Every sentence is backed by something built, measured, or fixed.
 
 ---
 
-## Appendix A — Live Database Table Status
+## Appendix A — Authoritative Database Table Status (Post-Hardening)
 
-| Table | RLS | Rows | Policies | Status |
-|---|---|---|---|---|
-| `profiles` | ✅ | 8 | 2 | `ALL` policy missing `with_check`; `is_admin` escalation risk |
-| `novels` | ✅ | 11 | 3 | Admin policy on `{public}` role |
-| `chapters` | ✅ | 3 | 2 | **CRITICAL: No ownership check on writes** |
-| `reviews` | ✅ | 1 | 2 | Write policy on `{public}` role |
-| `comments` | ✅ | 2 | 2 | Write policy on `{public}` role |
-| `comment_likes` | ✅ | 1 | 2 | Write policy on `{public}` role |
-| `user_library` | ✅ | 2 | 1 | Write policy on `{public}` role |
-| `reading_history` | ✅ | 0 | 1 | Write policy on `{public}` role |
-| `reading_time_logs` | ✅ | 0 | **0** | **Dead — analytics broken** |
-| `posts` | ✅ | 0 | **0** | **Dead** |
-| `polls` | ✅ | 0 | **0** | **Dead** |
-| `poll_votes` | ✅ | 0 | **0** | **Dead** |
-| `wallets` | ✅ | 0 | **0** | **Dead — wallet feature broken** |
-| `coin_transactions` | ✅ | 0 | **0** | **Dead** |
-| `follows` | ✅ | 0 | 2 | Duplicate of `followers` |
-| `followers` | ✅ | 7 | 2 | Duplicate of `follows` |
-| `messages` | ✅ | 13 | 3 | OK |
-| `blogs` | ✅ | 0 | 4 | Unimplemented feature |
-| `blog_likes` | ✅ | 0 | 2 | Unimplemented feature |
-| `blog_comments` | ✅ | 0 | 3 | Unimplemented feature |
-| `blog_comment_likes` | ✅ | 0 | 2 | Unimplemented feature |
-| `notifications` | ✅ | 8 | 3 | Insert policy too permissive |
+| Category | Table | RLS | Status / Hardening Applied |
+|---|---|---|---|
+| **Active MVP (1)** | `profiles` | ✅ | InitPlan optimized, trigger `prevent_is_admin_self_escalation` active, admin JWT claims |
+| **Active MVP (2)** | `novels` | ✅ | Soft-delete enabled, FK indexes active, full text & genre indexed |
+| **Active MVP (3)** | `chapters` | ✅ | Author-ownership RLS verified, `UNIQUE(novel_id, chapter_number)`, FK index active |
+| **Active MVP (4)** | `reviews` | ✅ | `UNIQUE(user_id, novel_id)` enforced, FK covering indexes active |
+| **Active MVP (5)** | `comments` | ✅ | Hierarchical tree assembly (`lib/comments.ts`), FK covering indexes active |
+| **Active MVP (6)** | `comment_likes` | ✅ | Toggle like handler, composite indexing active |
+| **Active MVP (7)** | `user_library` | ✅ | Reading/Completed/Favourite status management, FK indexes active |
+| **Active MVP (8)** | `reading_history` | ✅ | Per-user chapter progress tracking (`user_id, novel_id, chapter_id`) |
+| **Active MVP (9)** | `messages` | ✅ | User-to-user conversation threads, FK indexes active |
+| **Active MVP (10)** | `wallets` | ✅ | `CHECK (coin_balance >= 0)`, mutation restricted to server-side RPC |
+| **Active MVP (11)** | `coin_transactions` | ✅ | Non-zero amounts, partial unique reference index, atomic Paystack RPC |
+| **Active MVP (12)** | `followers` | ✅ | Canonical follower relationship table, FK indexes active |
+| **Active MVP (13)** | `blogs` | ✅ | Author community articles, public reading allowed, FK indexes active |
+| **Active MVP (14)** | `blog_likes` | ✅ | Article like toggling, FK covering indexes active |
+| **Active MVP (15)** | `blog_comments` | ✅ | Threaded article discussion, FK covering indexes active |
+| **Active MVP (16)** | `blog_comment_likes` | ✅ | Comment appreciation tracking, FK covering indexes active |
+| **Active MVP (17)** | `notifications` | ✅ | Service-role restricted system alerts, FK covering indexes active |
+| **Deferred / Frozen (1)** | `posts` | ✅ | Social feed feature deferred to post-MVP roadmap |
+| **Deferred / Frozen (2)** | `polls` | ✅ | Community polling feature deferred to post-MVP roadmap |
+| **Deferred / Frozen (3)** | `poll_votes` | ✅ | Community poll voting deferred to post-MVP roadmap |
+| **Deferred / Frozen (4)** | `reading_time_logs` | ✅ | Direct DB heartbeats deferred to AWS SQS + Lambda async pipeline |
+| **Deprecated (1)** | `follows` | ✅ | Superseded by canonical `followers` table |
 
 ## Appendix B — Supabase Advisor Findings Summary
 

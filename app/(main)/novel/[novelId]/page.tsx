@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import NovelReviews from "@/components/web/novel-reviews";
 import CommentsSection from "@/components/web/comments-section";
 import LibraryStatusButton from "@/components/web/library-status-button";
 import type { ReviewWithAuthor, CommentWithMeta } from "@/types/engagement";
+import { SITE_URL } from "@/lib/constants";
 
 interface NovelWithAuthorDetail {
   id: string;
@@ -16,6 +18,7 @@ interface NovelWithAuthorDetail {
   genres: string[] | null;
   status: string | null;
   maturity_rating: string | null;
+  created_at: string | null;
   author_id: string;
   profiles: {
     username: string | null;
@@ -24,6 +27,57 @@ interface NovelWithAuthorDetail {
     username: string | null;
     full_name: string | null;
   }[] | null;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ novelId: string }> }): Promise<Metadata> {
+  const { novelId } = await params;
+  const supabase = await createClient();
+
+  const { data: novel } = await supabase
+    .from("novels")
+    .select(`
+      title,
+      synopsis,
+      cover_url,
+      genres,
+      profiles:author_id(username, full_name)
+    `)
+    .eq("id", novelId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!novel) {
+    return {
+      title: "Novel Not Found",
+    };
+  }
+
+  const author = Array.isArray(novel.profiles) ? novel.profiles[0] : novel.profiles;
+  const authorName = author?.full_name || author?.username || "Unknown Author";
+  const title = `${novel.title} by ${authorName}`;
+  const description = novel.synopsis ? novel.synopsis.slice(0, 160) : `Read ${novel.title} on NovelApp`;
+  const canonicalUrl = `${SITE_URL}/novel/${novelId}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${novel.title} | NovelApp`,
+      description,
+      url: canonicalUrl,
+      type: "book",
+      images: novel.cover_url ? [{ url: novel.cover_url, alt: novel.title }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${novel.title} | NovelApp`,
+      description,
+      images: novel.cover_url ? [novel.cover_url] : [],
+    },
+  };
 }
 
 export default async function NovelPage({ params }: { params: Promise<{ novelId: string }> }) {
@@ -54,10 +108,6 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
     .order("chapter_number", { ascending: true });
 
   const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/auth/login');
-  }
 
   const { data: reviews } = await supabase
     .from("reviews")
@@ -90,8 +140,51 @@ export default async function NovelPage({ params }: { params: Promise<{ novelId:
   
   const firstChapter = chapters?.[0]?.chapter_number;
 
+  // Build Schema.org Book JSON-LD strictly from existing database values
+  const bookJsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: novel.title,
+    url: `${SITE_URL}/novel/${novel.id}`,
+  };
+
+  if (novel.synopsis) {
+    bookJsonLd.description = novel.synopsis;
+  }
+  if (novel.cover_url) {
+    bookJsonLd.image = novel.cover_url;
+  }
+  if (authorName && authorName !== "Unknown Author") {
+    bookJsonLd.author = {
+      "@type": "Person",
+      name: authorName,
+    };
+  }
+  if (novel.genres && novel.genres.length > 0) {
+    bookJsonLd.genre = novel.genres;
+  }
+  if (novel.created_at) {
+    bookJsonLd.datePublished = novel.created_at;
+  }
+  if (reviews && reviews.length > 0) {
+    const avg = (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1);
+    bookJsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: avg,
+      reviewCount: reviews.length,
+      bestRating: "5",
+      worstRating: "1",
+    };
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 space-y-12 animate-in fade-in duration-500">
+      {/* Schema.org Book JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd) }}
+      />
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="w-full md:w-72 shrink-0 aspect-2/3 rounded-lg overflow-hidden border border-border shadow-2xl shadow-primary/10 bg-muted relative group">

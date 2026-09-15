@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import type { Metadata } from "next"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, PenTool, ArrowRight } from "lucide-react"
 import { Tables } from "@/types/database.types"
+import { SITE_URL } from "@/lib/constants"
 
 type BlogRow = Tables<'blogs'>
 
@@ -14,6 +15,19 @@ export interface BlogWithAuthor extends BlogRow {
     full_name: string | null
     avatar_url: string | null
   } | null
+}
+
+export const metadata: Metadata = {
+  title: "Community Blogs",
+  description: "Read the latest updates, stories, and announcements directly from your favorite authors on NovelApp.",
+  alternates: {
+    canonical: `${SITE_URL}/blogs`,
+  },
+  openGraph: {
+    title: "Community Blogs | NovelApp",
+    description: "Read the latest updates, stories, and announcements directly from your favorite authors on NovelApp.",
+    url: `${SITE_URL}/blogs`,
+  },
 }
 
 // Helper component to render a list of blogs
@@ -38,25 +52,24 @@ function BlogList({ blogs, emptyTitle, emptyDesc }: { blogs: BlogWithAuthor[], e
         
         return (
           <Link href={`/blogs/${blog.id}`} key={blog.id} className="block group">
-            <Card className="relative overflow-hidden border-border/50 bg-card hover:bg-card/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 group-hover:border-primary/30">
-              
-              {/* Subtle accent gradient */}
-              <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-              <CardContent className="p-8 relative z-10 flex flex-col sm:flex-row gap-8">
+            <Card className="hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary/5 overflow-hidden border-border bg-card/60 backdrop-blur-xs">
+              <CardContent className="p-8 flex flex-col md:flex-row gap-6 items-start">
                 
-                {/* Author Info Column */}
-                <div className="flex flex-col sm:items-center sm:w-32 shrink-0 border-b sm:border-b-0 sm:border-r border-border pb-6 sm:pb-0 sm:pr-8">
-                  <div className="size-14 rounded-full bg-muted border-2 border-background shadow-sm overflow-hidden mb-3">
+                {/* Author Metadata Column */}
+                <div className="flex md:flex-col items-center md:items-start gap-4 shrink-0 md:w-48 border-b md:border-b-0 md:border-r border-border pb-4 md:pb-0 md:pr-6 w-full">
+                  <div className="size-12 rounded-full bg-muted overflow-hidden border border-border flex items-center justify-center shrink-0">
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={authorName} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-lg">
-                        {authorName.charAt(0).toUpperCase()}
-                      </div>
+                      <PenTool className="size-5 text-muted-foreground" />
                     )}
                   </div>
-                  <span className="font-bold text-sm text-center line-clamp-2">{authorName}</span>
+                  <div>
+                    <h4 className="font-bold text-foreground group-hover:text-primary transition-colors text-sm line-clamp-1">
+                      {authorName}
+                    </h4>
+                    <p className="text-xs text-muted-foreground">Author</p>
+                  </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2 font-medium">
                     <Calendar className="size-3" />
                     <time>{new Date(blog.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</time>
@@ -89,10 +102,6 @@ function BlogList({ blogs, emptyTitle, emptyDesc }: { blogs: BlogWithAuthor[], e
 export default async function BlogsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/auth/login')
-  }
 
   // 1. Fetch Discover Blogs (Global feed)
   const { data: discoverBlogs } = await supabase

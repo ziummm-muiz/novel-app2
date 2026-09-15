@@ -1,13 +1,53 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import CommentsSection from "@/components/web/comments-section";
 import type { CommentWithMeta } from "@/types/engagement";
+import { SITE_URL } from "@/lib/constants";
 
-export default async function ChapterPage({ params }: { params: Promise<{ novelId: string, chapterNumber: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ novelId: string; chapterNumber: string }> }): Promise<Metadata> {
+  const { novelId, chapterNumber } = await params;
+  const chapterNum = parseInt(chapterNumber);
+  const supabase = await createClient();
+
+  const { data: chapter } = await supabase
+    .from("chapters")
+    .select("title, chapter_number, novels(title)")
+    .eq("novel_id", novelId)
+    .eq("chapter_number", chapterNum)
+    .is("deleted_at", null)
+    .single();
+
+  if (!chapter) {
+    return {
+      title: "Chapter Not Found",
+    };
+  }
+
+  const novelTitle = (Array.isArray(chapter.novels) ? chapter.novels[0]?.title : chapter.novels?.title) || "Novel";
+  const chapterTitle = chapter.title ? `Chapter ${chapter.chapter_number}: ${chapter.title}` : `Chapter ${chapter.chapter_number}`;
+  const pageTitle = `${chapterTitle} - ${novelTitle}`;
+  const canonicalUrl = `${SITE_URL}/novel/${novelId}/chapter/${chapterNumber}`;
+
+  return {
+    title: pageTitle,
+    description: `Read ${chapterTitle} of ${novelTitle} on NovelApp.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${pageTitle} | NovelApp`,
+      description: `Read ${chapterTitle} of ${novelTitle} on NovelApp.`,
+      url: canonicalUrl,
+    },
+  };
+}
+
+export default async function ChapterPage({ params }: { params: Promise<{ novelId: string; chapterNumber: string }> }) {
   const { novelId, chapterNumber } = await params;
   const supabase = await createClient();
   const chapterNum = parseInt(chapterNumber);
@@ -26,10 +66,6 @@ export default async function ChapterPage({ params }: { params: Promise<{ novelI
 
   // Record reading history if logged in
   const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    redirect('/auth/login');
-  }
 
   if (user) {
     await supabase.from("reading_history").upsert({
